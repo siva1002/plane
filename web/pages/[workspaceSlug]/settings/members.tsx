@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { observer } from "mobx-react-lite";
 import { Search } from "lucide-react";
 // hooks
-import { useEventTracker, useMember, useUser } from "hooks/store";
+import { useApplication, useMember, useUser } from "hooks/store";
 import useToast from "hooks/use-toast";
 // layouts
 import { AppLayout } from "layouts/app-layout";
@@ -27,7 +27,9 @@ const WorkspaceMembersSettingsPage: NextPageWithLayout = observer(() => {
   const router = useRouter();
   const { workspaceSlug } = router.query;
   // store hooks
-  const { captureEvent, setTrackElement } = useEventTracker();
+  const {
+    eventTracker: { postHogEventTracker, setTrackElement },
+  } = useApplication();
   const {
     membership: { currentWorkspaceRole },
   } = useUser();
@@ -43,7 +45,7 @@ const WorkspaceMembersSettingsPage: NextPageWithLayout = observer(() => {
     return inviteMembersToWorkspace(workspaceSlug.toString(), data)
       .then(() => {
         setInviteModal(false);
-        captureEvent("Member invited", { state: "SUCCESS" });
+        postHogEventTracker("MEMBER_INVITED", { state: "SUCCESS" });
         setToastAlert({
           type: "success",
           title: "Success!",
@@ -51,7 +53,7 @@ const WorkspaceMembersSettingsPage: NextPageWithLayout = observer(() => {
         });
       })
       .catch((err) => {
-        captureEvent("Member invited", { state: "FAILED" });
+        postHogEventTracker("MEMBER_INVITED", { state: "FAILED" });
         setToastAlert({
           type: "error",
           title: "Error!",

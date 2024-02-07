@@ -3,7 +3,7 @@ import Image from "next/image";
 import { observer } from "mobx-react-lite";
 import { X } from "lucide-react";
 // hooks
-import { useApplication, useEventTracker, useUser } from "hooks/store";
+import { useApplication, useUser } from "hooks/store";
 // components
 import { TourSidebar } from "components/onboarding";
 // ui
@@ -78,8 +78,10 @@ export const TourRoot: React.FC<Props> = observer((props) => {
   // states
   const [step, setStep] = useState<TTourSteps>("welcome");
   // store hooks
-  const { commandPalette: commandPaletteStore } = useApplication();
-  const { setTrackElement } = useEventTracker();
+  const {
+    commandPalette: commandPaletteStore,
+    eventTracker: { setTrackElement },
+  } = useApplication();
   const { currentUser } = useUser();
 
   const currentStepIndex = TOUR_STEPS.findIndex((tourStep) => tourStep.key === step);
@@ -157,7 +159,7 @@ export const TourRoot: React.FC<Props> = observer((props) => {
                     variant="primary"
                     onClick={() => {
                       onComplete();
-                      setTrackElement("Onboarding tour");
+                      setTrackElement("ONBOARDING_TOUR");
                       commandPaletteStore.toggleCreateProjectModal(true);
                     }}
                   >

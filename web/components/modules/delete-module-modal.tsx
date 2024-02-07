@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { Dialog, Transition } from "@headlessui/react";
 import { observer } from "mobx-react-lite";
 // hooks
-import { useEventTracker, useModule } from "hooks/store";
+import { useApplication, useModule } from "hooks/store";
 import useToast from "hooks/use-toast";
 // ui
 import { Button } from "@plane/ui";
@@ -26,7 +26,9 @@ export const DeleteModuleModal: React.FC<Props> = observer((props) => {
   const router = useRouter();
   const { workspaceSlug, projectId, moduleId, peekModule } = router.query;
   // store hooks
-  const { captureModuleEvent } = useEventTracker();
+  const {
+    eventTracker: { postHogEventTracker },
+  } = useApplication();
   const { deleteModule } = useModule();
   // toast alert
   const { setToastAlert } = useToast();
@@ -50,9 +52,8 @@ export const DeleteModuleModal: React.FC<Props> = observer((props) => {
           title: "Success!",
           message: "Module deleted successfully.",
         });
-        captureModuleEvent({
-          eventName: "Module deleted",
-          payload: { ...data, state: "SUCCESS" },
+        postHogEventTracker("MODULE_DELETED", {
+          state: "SUCCESS",
         });
       })
       .catch(() => {
@@ -61,9 +62,8 @@ export const DeleteModuleModal: React.FC<Props> = observer((props) => {
           title: "Error!",
           message: "Module could not be deleted. Please try again.",
         });
-        captureModuleEvent({
-          eventName: "Module deleted",
-          payload: { ...data, state: "FAILED" },
+        postHogEventTracker("MODULE_DELETED", {
+          state: "FAILED",
         });
       })
       .finally(() => {

@@ -38,8 +38,6 @@ export interface IIssueRootStore {
   members: string[] | undefined;
   projects: string[] | undefined;
 
-  rootStore: RootStore;
-
   issues: IIssueStore;
 
   state: IStateStore;
@@ -89,8 +87,6 @@ export class IssueRootStore implements IIssueRootStore {
   members: string[] | undefined = undefined;
   projects: string[] | undefined = undefined;
 
-  rootStore: RootStore;
-
   issues: IIssueStore;
 
   state: IStateStore;
@@ -139,8 +135,6 @@ export class IssueRootStore implements IIssueRootStore {
       members: observable,
       projects: observable,
     });
-
-    this.rootStore = rootStore;
 
     autorun(() => {
       if (rootStore.user.currentUser?.id) this.currentUserId = rootStore.user.currentUser?.id;

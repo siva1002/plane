@@ -4,7 +4,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { observer } from "mobx-react-lite";
 import { AlertTriangle } from "lucide-react";
 // hooks
-import { useEventTracker, useCycle } from "hooks/store";
+import { useApplication, useCycle } from "hooks/store";
 import useToast from "hooks/use-toast";
 // components
 import { Button } from "@plane/ui";
@@ -27,7 +27,9 @@ export const CycleDeleteModal: React.FC<ICycleDelete> = observer((props) => {
   const router = useRouter();
   const { cycleId, peekCycle } = router.query;
   // store hooks
-  const { captureCycleEvent } = useEventTracker();
+  const {
+    eventTracker: { postHogEventTracker },
+  } = useApplication();
   const { deleteCycle } = useCycle();
   // toast alert
   const { setToastAlert } = useToast();
@@ -44,15 +46,13 @@ export const CycleDeleteModal: React.FC<ICycleDelete> = observer((props) => {
             title: "Success!",
             message: "Cycle deleted successfully.",
           });
-          captureCycleEvent({
-            eventName: "Cycle deleted",
-            payload: { ...cycle, state: "SUCCESS" },
+          postHogEventTracker("CYCLE_DELETE", {
+            state: "SUCCESS",
           });
         })
         .catch(() => {
-          captureCycleEvent({
-            eventName: "Cycle deleted",
-            payload: { ...cycle, state: "FAILED" },
+          postHogEventTracker("CYCLE_DELETE", {
+            state: "FAILED",
           });
         });
 

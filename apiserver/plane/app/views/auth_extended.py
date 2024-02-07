@@ -59,6 +59,7 @@ def generate_magic_token(email):
         + "-"
         + "".join(random.choices(string.ascii_lowercase, k=4))
     )
+    print(token)
 
     # Initialize the redis instance
     ri = redis_instance()
@@ -273,6 +274,7 @@ class MagicGenerateEndpoint(BaseAPIView):
             + "-"
             + "".join(random.choices(string.ascii_lowercase, k=4))
         )
+        print(token)
 
         ri = redis_instance()
 

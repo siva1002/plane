@@ -39,7 +39,6 @@ const fileService = new FileService();
 
 const ProfileSettingsPage: NextPageWithLayout = observer(() => {
   // states
-  const [isLoading, setIsLoading] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
   const [isImageUploadModalOpen, setIsImageUploadModalOpen] = useState(false);
   const [deactivateAccountModal, setDeactivateAccountModal] = useState(false);
@@ -49,7 +48,7 @@ const ProfileSettingsPage: NextPageWithLayout = observer(() => {
     reset,
     watch,
     control,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<IUser>({ defaultValues });
   // toast alert
   const { setToastAlert } = useToast();
@@ -63,7 +62,6 @@ const ProfileSettingsPage: NextPageWithLayout = observer(() => {
   }, [myProfile, reset]);
 
   const onSubmit = async (formData: IUser) => {
-    setIsLoading(true);
     const payload: Partial<IUser> = {
       first_name: formData.first_name,
       last_name: formData.last_name,
@@ -89,9 +87,6 @@ const ProfileSettingsPage: NextPageWithLayout = observer(() => {
           message: "There was some error in updating your profile. Please try again.",
         })
       );
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 300);
   };
 
   const handleDelete = (url: string | null | undefined, updateUser: boolean = false) => {
@@ -393,8 +388,8 @@ const ProfileSettingsPage: NextPageWithLayout = observer(() => {
               </div>
 
               <div className="flex items-center justify-between py-2">
-                <Button variant="primary" type="submit" loading={isLoading}>
-                  {isLoading ? "Saving..." : "Save changes"}
+                <Button variant="primary" type="submit" loading={isSubmitting}>
+                  {isSubmitting ? "Saving..." : "Save changes"}
                 </Button>
               </div>
             </div>

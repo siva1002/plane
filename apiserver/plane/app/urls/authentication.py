@@ -7,6 +7,7 @@ from plane.app.views import (
     # Authentication
     SignInEndpoint,
     SignOutEndpoint,
+    SignUpEndpoint,
     MagicGenerateEndpoint,
     MagicSignInEndpoint,
     OauthEndpoint,
@@ -30,6 +31,7 @@ urlpatterns = [
     # Auth
     path("sign-in/", SignInEndpoint.as_view(), name="sign-in"),
     path("sign-out/", SignOutEndpoint.as_view(), name="sign-out"),
+
     # magic sign in
     path(
         "magic-generate/",

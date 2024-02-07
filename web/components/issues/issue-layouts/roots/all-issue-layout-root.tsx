@@ -5,7 +5,7 @@ import useSWR from "swr";
 import isEmpty from "lodash/isEmpty";
 import { useTheme } from "next-themes";
 // hooks
-import { useApplication, useEventTracker, useGlobalView, useIssues, useProject, useUser } from "hooks/store";
+import { useApplication, useGlobalView, useIssues, useProject, useUser } from "hooks/store";
 import { useWorkspaceIssueProperties } from "hooks/use-workspace-issue-properties";
 // components
 import { GlobalViewsAppliedFiltersRoot, IssuePeekOverview } from "components/issues";
@@ -44,7 +44,6 @@ export const AllIssueLayoutRoot: React.FC = observer(() => {
   } = useUser();
   const { fetchAllGlobalViews } = useGlobalView();
   const { workspaceProjectIds } = useProject();
-  const { setTrackElement } = useEventTracker();
 
   const isDefaultView = ["all-issues", "assigned", "created", "subscribed"].includes(groupedIssueIds.dataViewId);
   const currentView = isDefaultView ? groupedIssueIds.dataViewId : "custom-view";
@@ -62,7 +61,6 @@ export const AllIssueLayoutRoot: React.FC = observer(() => {
       ["all-issues", "assigned", "created", "subscribed"].includes(globalViewId.toString())
     ) {
       const routerQueryParams = { ...router.query };
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { ["workspaceSlug"]: _workspaceSlug, ["globalViewId"]: _globalViewId, ...filters } = routerQueryParams;
 
       let issueFilters: any = {};
@@ -149,15 +147,9 @@ export const AllIssueLayoutRoot: React.FC = observer(() => {
 
   const handleDisplayFiltersUpdate = useCallback(
     (updatedDisplayFilter: Partial<IIssueDisplayFilterOptions>) => {
-      if (!workspaceSlug || !globalViewId) return;
+      if (!workspaceSlug) return;
 
-      updateFilters(
-        workspaceSlug.toString(),
-        undefined,
-        EIssueFilterType.DISPLAY_FILTERS,
-        { ...updatedDisplayFilter },
-        globalViewId.toString()
-      );
+      updateFilters(workspaceSlug.toString(), undefined, EIssueFilterType.DISPLAY_FILTERS, { ...updatedDisplayFilter });
     },
     [updateFilters, workspaceSlug]
   );
@@ -202,18 +194,12 @@ export const AllIssueLayoutRoot: React.FC = observer(() => {
                   ? currentView !== "custom-view" && currentView !== "subscribed"
                     ? {
                         text: "Create new issue",
-                        onClick: () => {
-                          setTrackElement("All issues empty state");
-                          commandPaletteStore.toggleCreateIssueModal(true, EIssuesStoreType.PROJECT);
-                        },
+                        onClick: () => commandPaletteStore.toggleCreateIssueModal(true, EIssuesStoreType.PROJECT),
                       }
                     : undefined
                   : {
                       text: "Start your first project",
-                      onClick: () => {
-                        setTrackElement("All issues empty state");
-                        commandPaletteStore.toggleCreateProjectModal(true);
-                      },
+                      onClick: () => commandPaletteStore.toggleCreateProjectModal(true),
                     }
               }
               disabled={!isEditingAllowed}

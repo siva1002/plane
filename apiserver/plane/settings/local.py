@@ -4,10 +4,10 @@ from .common import *  # noqa
 DEBUG = True
 
 # Debug Toolbar settings
-INSTALLED_APPS += ("debug_toolbar",)
+INSTALLED_APPS += ("debug_toolbar",'django.contrib.staticfiles')
 MIDDLEWARE += ("debug_toolbar.middleware.DebugToolbarMiddleware",)
 
-DEBUG_TOOLBAR_PATCH_SETTINGS = False
+DEBUG_TOOLBAR_PATCH_SETTINGS = True
 
 # Only show emails in console don't send it to smtp
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

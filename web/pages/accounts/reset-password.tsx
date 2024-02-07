@@ -1,4 +1,4 @@
-import { ReactElement, useState } from "react";
+import { ReactElement } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { Controller, useForm } from "react-hook-form";
@@ -19,8 +19,6 @@ import BluePlaneLogoWithoutText from "public/plane-logos/blue-without-text.png";
 import { checkEmailValidity } from "helpers/string.helper";
 // type
 import { NextPageWithLayout } from "lib/types";
-// icons
-import { Eye, EyeOff } from "lucide-react";
 
 type TResetPasswordFormValues = {
   email: string;
@@ -39,8 +37,6 @@ const ResetPasswordPage: NextPageWithLayout = () => {
   // router
   const router = useRouter();
   const { uidb64, token, email } = router.query;
-  // states
-  const [showPassword, setShowPassword] = useState(false);
   // toast
   const { setToastAlert } = useToast();
   // sign in redirection hook
@@ -121,28 +117,15 @@ const ResetPasswordPage: NextPageWithLayout = () => {
                   required: "Password is required",
                 }}
                 render={({ field: { value, onChange } }) => (
-                  <div className="relative flex items-center rounded-md bg-onboarding-background-200">
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      value={value}
-                      onChange={onChange}
-                      hasError={Boolean(errors.password)}
-                      placeholder="Enter password"
-                      className="h-[46px] w-full border border-onboarding-border-100 !bg-onboarding-background-200 pr-12 placeholder:text-onboarding-text-400"
-                      minLength={8}
-                    />
-                    {showPassword ? (
-                      <EyeOff
-                        className="absolute right-3 h-5 w-5 stroke-custom-text-400 hover:cursor-pointer"
-                        onClick={() => setShowPassword(false)}
-                      />
-                    ) : (
-                      <Eye
-                        className="absolute right-3 h-5 w-5 stroke-custom-text-400 hover:cursor-pointer"
-                        onClick={() => setShowPassword(true)}
-                      />
-                    )}
-                  </div>
+                  <Input
+                    type="password"
+                    value={value}
+                    onChange={onChange}
+                    hasError={Boolean(errors.password)}
+                    placeholder="Enter password"
+                    className="h-[46px] w-full border border-onboarding-border-100 !bg-onboarding-background-200 pr-12 placeholder:text-onboarding-text-400"
+                    minLength={8}
+                  />
                 )}
               />
               <Button

@@ -49,9 +49,8 @@ interface IBaseListRoot {
   };
   viewId?: string;
   storeType: TCreateModalStoreTypes;
-  addIssuesToView?: (issueIds: string[]) => Promise<any>;
+  addIssuesToView?: (issueIds: string[]) => Promise<TIssue>;
   canEditPropertiesBasedOnProject?: (projectId: string) => boolean;
-  isCompletedCycle?: boolean;
 }
 
 export const BaseListRoot = observer((props: IBaseListRoot) => {
@@ -64,7 +63,6 @@ export const BaseListRoot = observer((props: IBaseListRoot) => {
     storeType,
     addIssuesToView,
     canEditPropertiesBasedOnProject,
-    isCompletedCycle = false,
   } = props;
   // mobx store
   const {
@@ -114,7 +112,6 @@ export const BaseListRoot = observer((props: IBaseListRoot) => {
         handleRemoveFromView={
           issueActions[EIssueActions.REMOVE] ? async () => handleIssues(issue, EIssueActions.REMOVE) : undefined
         }
-        readOnly={!isEditingAllowed || isCompletedCycle}
       />
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -139,7 +136,6 @@ export const BaseListRoot = observer((props: IBaseListRoot) => {
           disableIssueCreation={!enableIssueCreation || !isEditingAllowed}
           storeType={storeType}
           addIssuesToView={addIssuesToView}
-          isCompletedCycle={isCompletedCycle}
         />
       </div>
     </>

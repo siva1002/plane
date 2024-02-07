@@ -197,6 +197,8 @@ def filter_assignees(params, filter, method):
         assignees = filter_valid_uuids(assignees)
         if len(assignees) and "" not in assignees:
             filter["assignees__in"] = assignees
+
+
     else:
         if (
             params.get("assignees", None)

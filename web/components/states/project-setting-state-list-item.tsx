@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { observer } from "mobx-react-lite";
 // hooks
-import { useEventTracker, useProjectState } from "hooks/store";
+import { useApplication, useProjectState } from "hooks/store";
 // ui
 import { Tooltip, StateGroupIcon } from "@plane/ui";
 // icons
@@ -28,7 +28,9 @@ export const StatesListItem: React.FC<Props> = observer((props) => {
   const router = useRouter();
   const { workspaceSlug, projectId } = router.query;
   // store hooks
-  const { setTrackElement } = useEventTracker();
+  const {
+    eventTracker: { setTrackElement },
+  } = useApplication();
   const { markStateAsDefault, moveStatePosition } = useProjectState();
   // derived values
   const groupStates = statesList.filter((s) => s.group === state.group);

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { observer } from "mobx-react-lite";
 // hooks
-import { useApplication, useEventTracker, useUser } from "hooks/store";
+import { useApplication, useUser } from "hooks/store";
 // ui
 import { Button } from "@plane/ui";
 // assets
@@ -14,7 +14,6 @@ export const DashboardProjectEmptyState = observer(() => {
   const {
     commandPalette: { toggleCreateProjectModal },
   } = useApplication();
-  const { setTrackElement } = useEventTracker();
   const {
     membership: { currentWorkspaceRole },
   } = useUser();
@@ -32,13 +31,7 @@ export const DashboardProjectEmptyState = observer(() => {
       <Image src={ProjectEmptyStateImage} className="w-full" alt="Project empty state" />
       {canCreateProject && (
         <div className="flex justify-center">
-          <Button
-            variant="primary"
-            onClick={() => {
-              setTrackElement("Project empty state");
-              toggleCreateProjectModal(true);
-            }}
-          >
+          <Button variant="primary" onClick={() => toggleCreateProjectModal(true)}>
             Build your first project
           </Button>
         </div>

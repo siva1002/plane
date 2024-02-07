@@ -8,7 +8,6 @@ import { useIssues } from "hooks/store";
 import { DraftIssueAppliedFiltersRoot } from "../filters/applied-filters/roots/draft-issue";
 import { DraftIssueListLayout } from "../list/roots/draft-issue-root";
 import { ProjectDraftEmptyState } from "../empty-states";
-import { IssuePeekOverview } from "components/issues/peek-overview";
 // ui
 import { Spinner } from "@plane/ui";
 import { DraftKanBanLayout } from "../kanban/roots/draft-issue-root";
@@ -58,8 +57,6 @@ export const DraftIssueLayoutRoot: React.FC = observer(() => {
               ) : activeLayout === "kanban" ? (
                 <DraftKanBanLayout />
               ) : null}
-              {/* issue peek overview */}
-              <IssuePeekOverview />
             </div>
           )}
         </>

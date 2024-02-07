@@ -1,8 +1,6 @@
 import { memo } from "react";
 import { Draggable, DraggableProvided, DraggableStateSnapshot } from "@hello-pangea/dnd";
 import { observer } from "mobx-react-lite";
-// hooks
-import { useApplication, useIssueDetail, useProject } from "hooks/store";
 // components
 import { WithDisplayPropertiesHOC } from "../properties/with-display-properties-HOC";
 import { IssueProperties } from "../properties/all-properties";
@@ -11,11 +9,9 @@ import { Tooltip, ControlLink } from "@plane/ui";
 // types
 import { TIssue, IIssueDisplayProperties, IIssueMap } from "@plane/types";
 import { EIssueActions } from "../types";
-// helper
-import { cn } from "helpers/common.helper";
+import { useApplication, useIssueDetail, useProject } from "hooks/store";
 
 interface IssueBlockProps {
-  peekIssueId?: string;
   issueId: string;
   issuesMap: IIssueMap;
   displayProperties: IIssueDisplayProperties | undefined;
@@ -44,8 +40,8 @@ const KanbanIssueDetailsBlock: React.FC<IssueDetailsBlockProps> = observer((prop
   } = useApplication();
   const { setPeekIssue } = useIssueDetail();
 
-  const updateIssue = async (issueToUpdate: TIssue) => {
-    if (issueToUpdate) await handleIssues(issueToUpdate, EIssueActions.UPDATE);
+  const updateIssue = (issueToUpdate: TIssue) => {
+    if (issueToUpdate) handleIssues(issueToUpdate, EIssueActions.UPDATE);
   };
 
   const handleIssuePeekOverview = (issue: TIssue) =>
@@ -66,28 +62,21 @@ const KanbanIssueDetailsBlock: React.FC<IssueDetailsBlockProps> = observer((prop
         </div>
       </WithDisplayPropertiesHOC>
 
-      {issue?.is_draft ? (
+      <ControlLink
+        href={`/${workspaceSlug}/projects/${projectId}/issues/${issue.id}`}
+        target="_blank"
+        onClick={() => handleIssuePeekOverview(issue)}
+        className="w-full line-clamp-1 cursor-pointer text-sm text-custom-text-100"
+      >
         <Tooltip tooltipHeading="Title" tooltipContent={issue.name}>
           <span>{issue.name}</span>
         </Tooltip>
-      ) : (
-        <ControlLink
-          href={`/${workspaceSlug}/projects/${projectId}/issues/${issue.id}`}
-          target="_blank"
-          onClick={() => handleIssuePeekOverview(issue)}
-          className="w-full line-clamp-1 cursor-pointer text-sm text-custom-text-100"
-        >
-          <Tooltip tooltipHeading="Title" tooltipContent={issue.name}>
-            <span>{issue.name}</span>
-          </Tooltip>
-        </ControlLink>
-      )}
+      </ControlLink>
 
       <IssueProperties
         className="flex flex-wrap items-center gap-2 whitespace-nowrap"
         issue={issue}
         displayProperties={displayProperties}
-        activeLayout="Kanban"
         handleIssues={updateIssue}
         isReadOnly={isReadOnly}
       />
@@ -97,7 +86,6 @@ const KanbanIssueDetailsBlock: React.FC<IssueDetailsBlockProps> = observer((prop
 
 export const KanbanIssueBlock: React.FC<IssueBlockProps> = memo((props) => {
   const {
-    peekIssueId,
     issueId,
     issuesMap,
     displayProperties,
@@ -133,12 +121,9 @@ export const KanbanIssueBlock: React.FC<IssueBlockProps> = memo((props) => {
             <div className="absolute left-0 top-0 z-[99999] h-full w-full animate-pulse bg-custom-background-100/20" />
           )}
           <div
-            className={cn(
-              "space-y-2 rounded border-[0.5px] border-custom-border-200 bg-custom-background-100 px-3 py-2 text-sm transition-all hover:border-custom-border-400",
-              { "hover:cursor-grab": !isDragDisabled },
-              { "border-custom-primary-100": snapshot.isDragging },
-              { "border border-custom-primary-70 hover:border-custom-primary-70": peekIssueId === issue.id }
-            )}
+            className={`space-y-2 rounded border-[0.5px] border-custom-border-200 bg-custom-background-100 px-3 py-2 text-sm shadow-custom-shadow-2xs transition-all ${
+              isDragDisabled ? "" : "hover:cursor-grab"
+            } ${snapshot.isDragging ? `border-custom-primary-100` : `border-transparent`}`}
           >
             <KanbanIssueDetailsBlock
               issue={issue}

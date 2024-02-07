@@ -105,6 +105,9 @@ export const handleIssueQueryParamsByLayout = (
     });
   }
 
+  // add start_target_date query param for the gantt_chart layout
+  if (layout === "gantt_chart") queryParams.push("start_target_date");
+
   return queryParams;
 };
 

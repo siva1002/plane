@@ -4,7 +4,6 @@ import { CustomMenu } from "@plane/ui";
 import { Copy, Link, Pencil, Trash2, XCircle } from "lucide-react";
 // hooks
 import useToast from "hooks/use-toast";
-import { useEventTracker, useIssues,useUser } from "hooks/store";
 // components
 import { CreateUpdateIssueModal, DeleteIssueModal } from "components/issues";
 // helpers
@@ -14,18 +13,9 @@ import { TIssue } from "@plane/types";
 import { IQuickActionProps } from "../list/list-view-types";
 // constants
 import { EIssuesStoreType } from "constants/issue";
-import { EUserProjectRoles } from "constants/project";
 
 export const CycleIssueQuickActions: React.FC<IQuickActionProps> = (props) => {
-  const {
-    issue,
-    handleDelete,
-    handleUpdate,
-    handleRemoveFromView,
-    customActionButton,
-    portalElement,
-    readOnly = false,
-  } = props;
+  const { issue, handleDelete, handleUpdate, handleRemoveFromView, customActionButton, portalElement } = props;
   // states
   const [createUpdateIssueModal, setCreateUpdateIssueModal] = useState(false);
   const [issueToEdit, setIssueToEdit] = useState<TIssue | undefined>(undefined);
@@ -33,20 +23,8 @@ export const CycleIssueQuickActions: React.FC<IQuickActionProps> = (props) => {
   // router
   const router = useRouter();
   const { workspaceSlug, cycleId } = router.query;
-  // store hooks
-  const { setTrackElement } = useEventTracker();
-  const { issuesFilter } = useIssues(EIssuesStoreType.CYCLE);
   // toast alert
   const { setToastAlert } = useToast();
-
-  // store hooks
-  const {
-    membership: { currentProjectRole },
-  } = useUser();
-
-  const isEditingAllowed = !!currentProjectRole && currentProjectRole >= EUserProjectRoles.MEMBER;
-
-  const activeLayout = `${issuesFilter.issueFilters?.displayFilters?.layout} layout`;
 
   const handleCopyIssueLink = () => {
     copyUrlToClipboard(`${workspaceSlug}/projects/${issue.project}/issues/${issue.id}`).then(() =>
@@ -101,57 +79,50 @@ export const CycleIssueQuickActions: React.FC<IQuickActionProps> = (props) => {
             Copy link
           </div>
         </CustomMenu.MenuItem>
-        {isEditingAllowed && !readOnly && (
-          <>
-            <CustomMenu.MenuItem
-              onClick={() => {
-                setIssueToEdit({
-                  ...issue,
-                  cycle: cycleId?.toString() ?? null,
-                });
-                setTrackElement(activeLayout);
+        <CustomMenu.MenuItem
+          onClick={() => {
+            setIssueToEdit({
+              ...issue,
+              cycle: cycleId?.toString() ?? null,
+            });
             setCreateUpdateIssueModal(true);
-              }}
-            >
-              <div className="flex items-center gap-2">
-                <Pencil className="h-3 w-3" />
-                Edit issue
-              </div>
-            </CustomMenu.MenuItem>
-            <CustomMenu.MenuItem
-              onClick={() => {
-                handleRemoveFromView && handleRemoveFromView();
-              }}
-            >
-              <div className="flex items-center gap-2">
-                <XCircle className="h-3 w-3" />
-                Remove from cycle
-              </div>
-            </CustomMenu.MenuItem>
-            <CustomMenu.MenuItem
-              onClick={() => {
-                setTrackElement(activeLayout);
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <Pencil className="h-3 w-3" />
+            Edit issue
+          </div>
+        </CustomMenu.MenuItem>
+        <CustomMenu.MenuItem
+          onClick={() => {
+            handleRemoveFromView && handleRemoveFromView();
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <XCircle className="h-3 w-3" />
+            Remove from cycle
+          </div>
+        </CustomMenu.MenuItem>
+        <CustomMenu.MenuItem
+          onClick={() => {
             setCreateUpdateIssueModal(true);
-              }}
-            >
-              <div className="flex items-center gap-2">
-                <Copy className="h-3 w-3" />
-                Make a copy
-              </div>
-            </CustomMenu.MenuItem>
-            <CustomMenu.MenuItem
-              onClick={() => {
-                setTrackElement(activeLayout);
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <Copy className="h-3 w-3" />
+            Make a copy
+          </div>
+        </CustomMenu.MenuItem>
+        <CustomMenu.MenuItem
+          onClick={() => {
             setDeleteIssueModal(true);
-              }}
-            >
-              <div className="flex items-center gap-2">
-                <Trash2 className="h-3 w-3" />
-                Delete issue
-              </div>
-            </CustomMenu.MenuItem>
-          </>
-        )}
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <Trash2 className="h-3 w-3" />
+            Delete issue
+          </div>
+        </CustomMenu.MenuItem>
       </CustomMenu>
     </>
   );

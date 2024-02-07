@@ -515,7 +515,7 @@ def notifications(
                             bulk_email_logs.append(
                                 EmailNotificationLog(
                                     triggered_by_id=actor_id,
-                                    receiver_id=mention_id,
+                                    receiver_id=subscriber,
                                     entity_identifier=issue_id,
                                     entity_name="issue",
                                     data={
@@ -552,7 +552,6 @@ def notifications(
                                             "old_value": str(
                                                 issue_activity.get("old_value")
                                             ),
-                                            "activity_time": issue_activity.get("created_at"),
                                         },
                                     },
                                 )
@@ -640,7 +639,6 @@ def notifications(
                                             "old_value": str(
                                                 last_activity.old_value
                                             ),
-                                            "activity_time": issue_activity.get("created_at"),
                                         },
                                     },
                                 )
@@ -697,7 +695,6 @@ def notifications(
                                                         "old_value"
                                                     )
                                                 ),
-                                                "activity_time": issue_activity.get("created_at"),
                                             },
                                         },
                                     )

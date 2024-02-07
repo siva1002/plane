@@ -7,9 +7,6 @@ import hmac
 # Django imports
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
-from django.core.mail import EmailMultiAlternatives, get_connection
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
 
 # Third party imports
 from celery import shared_task
@@ -25,10 +22,10 @@ from plane.db.models import (
     ModuleIssue,
     CycleIssue,
     IssueComment,
-    User,
 )
 from plane.api.serializers import (
     ProjectSerializer,
+    IssueSerializer,
     CycleSerializer,
     ModuleSerializer,
     CycleIssueSerializer,
@@ -36,9 +33,6 @@ from plane.api.serializers import (
     IssueCommentSerializer,
     IssueExpandSerializer,
 )
-
-# Module imports
-from plane.license.utils.instance_value import get_email_configuration
 
 SERIALIZER_MAPPER = {
     "project": ProjectSerializer,
@@ -78,7 +72,7 @@ def get_model_data(event, event_id, many=False):
     max_retries=5,
     retry_jitter=True,
 )
-def webhook_task(self, webhook, slug, event, event_data, action, current_site):
+def webhook_task(self, webhook, slug, event, event_data, action):
     try:
         webhook = Webhook.objects.get(id=webhook, workspace__slug=slug)
 
@@ -157,18 +151,7 @@ def webhook_task(self, webhook, slug, event, event_data, action, current_site):
             response_body=str(e),
             retry_count=str(self.request.retries),
         )
-        # Retry logic
-        if self.request.retries >= self.max_retries:
-            Webhook.objects.filter(pk=webhook.id).update(is_active=False)   
-            if webhook:
-                # send email for the deactivation of the webhook
-                send_webhook_deactivation_email(
-                    webhook_id=webhook.id,
-                    receiver_id=webhook.created_by_id,
-                    reason=str(e),
-                    current_site=current_site,
-                )
-            return
+
         raise requests.RequestException()
 
     except Exception as e:
@@ -179,7 +162,7 @@ def webhook_task(self, webhook, slug, event, event_data, action, current_site):
 
 
 @shared_task()
-def send_webhook(event, payload, kw, action, slug, bulk, current_site):
+def send_webhook(event, payload, kw, action, slug, bulk):
     try:
         webhooks = Webhook.objects.filter(workspace__slug=slug, is_active=True)
 
@@ -233,64 +216,10 @@ def send_webhook(event, payload, kw, action, slug, bulk, current_site):
                         event=event,
                         event_data=data,
                         action=action,
-                        current_site=current_site,
                     )
 
     except Exception as e:
         if settings.DEBUG:
             print(e)
         capture_exception(e)
-        return
-
-
-@shared_task
-def send_webhook_deactivation_email(webhook_id, receiver_id, current_site, reason):
-    # Get email configurations
-    (
-        EMAIL_HOST,
-        EMAIL_HOST_USER,
-        EMAIL_HOST_PASSWORD,
-        EMAIL_PORT,
-        EMAIL_USE_TLS,
-        EMAIL_FROM,
-    ) = get_email_configuration()
-
-    receiver = User.objects.get(pk=receiver_id)
-    webhook = Webhook.objects.get(pk=webhook_id) 
-    subject="Webhook Deactivated"
-    message=f"Webhook {webhook.url} has been deactivated due to failed requests."
-
-    # Send the mail
-    context = {
-        "email": receiver.email,
-        "message": message,
-        "webhook_url":f"{current_site}/{str(webhook.workspace.slug)}/settings/webhooks/{str(webhook.id)}",
-    }
-    html_content = render_to_string(
-        "emails/notifications/webhook-deactivate.html", context
-    )
-    text_content = strip_tags(html_content)
-
-    try:
-        connection = get_connection(
-            host=EMAIL_HOST,
-            port=int(EMAIL_PORT),
-            username=EMAIL_HOST_USER,
-            password=EMAIL_HOST_PASSWORD,
-            use_tls=EMAIL_USE_TLS == "1",
-        )
-
-        msg = EmailMultiAlternatives(
-            subject=subject,
-            body=text_content,
-            from_email=EMAIL_FROM,
-            to=[receiver.email],
-            connection=connection,
-        )
-        msg.attach_alternative(html_content, "text/html")
-        msg.send()
-
-        return
-    except Exception as e:
-        print(e)
         return

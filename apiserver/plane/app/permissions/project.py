@@ -89,6 +89,14 @@ class ProjectEntityPermission(BasePermission):
             ).exists()
 
         ## Only project members or admins can create and edit the project attributes
+        projectmember=ProjectMember.objects.filter(
+            workspace__slug=view.workspace_slug,
+            member=request.user,
+            role__in=[Admin, Member],
+            project_id=view.project_id,
+            is_active=True,
+        )
+
         return ProjectMember.objects.filter(
             workspace__slug=view.workspace_slug,
             member=request.user,

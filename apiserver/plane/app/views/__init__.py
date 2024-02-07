@@ -100,6 +100,7 @@ from .auth_extended import (
 from .authentication import (
     SignInEndpoint,
     SignOutEndpoint,
+    SignUpEndpoint,
     MagicSignInEndpoint,
 )
 
@@ -183,4 +184,9 @@ from .webhook import (
 from .dashboard import (
     DashboardEndpoint,
     WidgetsEndpoint
+)
+from .timesheet import (
+    TimesheetView,
+    TimeSheetCreateView,
+    ProjectTimesheet
 )

@@ -8,7 +8,7 @@ import { ChevronDown } from "lucide-react";
 import { Menu, Transition } from "@headlessui/react";
 import { Controller, useForm } from "react-hook-form";
 // hooks
-import { useEventTracker, useUser, useWorkspace } from "hooks/store";
+import { useApplication, useUser, useWorkspace } from "hooks/store";
 import useUserAuth from "hooks/use-user-auth";
 // services
 import { WorkspaceService } from "services/workspace.service";
@@ -35,7 +35,9 @@ const OnboardingPage: NextPageWithLayout = observer(() => {
   // router
   const router = useRouter();
   // store hooks
-  const { captureEvent } = useEventTracker();
+  const {
+    eventTracker: { postHogEventTracker },
+  } = useApplication();
   const { currentUser, currentUserLoader, updateCurrentUser, updateUserOnBoard } = useUser();
   const { workspaces, fetchWorkspaces } = useWorkspace();
   // custom hooks
@@ -79,7 +81,7 @@ const OnboardingPage: NextPageWithLayout = observer(() => {
 
     await updateUserOnBoard()
       .then(() => {
-        captureEvent("User onboarding completed", {
+        postHogEventTracker("USER_ONBOARDING_COMPLETE", {
           user_role: user.role,
           email: user.email,
           user_id: user.id,

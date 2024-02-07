@@ -4,7 +4,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { observer } from "mobx-react-lite";
 import { AlertTriangle } from "lucide-react";
 // hooks
-import { useEventTracker, useProjectState } from "hooks/store";
+import { useApplication, useProjectState } from "hooks/store";
 import useToast from "hooks/use-toast";
 // ui
 import { Button } from "@plane/ui";
@@ -25,7 +25,9 @@ export const DeleteStateModal: React.FC<Props> = observer((props) => {
   const router = useRouter();
   const { workspaceSlug } = router.query;
   // store hooks
-  const { captureEvent } = useEventTracker();
+  const {
+    eventTracker: { postHogEventTracker },
+  } = useApplication();
   const { deleteState } = useProjectState();
   // toast alert
   const { setToastAlert } = useToast();
@@ -42,7 +44,7 @@ export const DeleteStateModal: React.FC<Props> = observer((props) => {
 
     await deleteState(workspaceSlug.toString(), data.project_id, data.id)
       .then(() => {
-        captureEvent("State deleted", {
+        postHogEventTracker("STATE_DELETE", {
           state: "SUCCESS",
         });
         handleClose();
@@ -61,7 +63,7 @@ export const DeleteStateModal: React.FC<Props> = observer((props) => {
             title: "Error!",
             message: "State could not be deleted. Please try again.",
           });
-        captureEvent("State deleted", {
+        postHogEventTracker("STATE_DELETE", {
           state: "FAILED",
         });
       })

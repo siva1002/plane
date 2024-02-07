@@ -5,7 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 // services
 import { WorkspaceService } from "services/workspace.service";
 // hooks
-import { useEventTracker, useWorkspace } from "hooks/store";
+import { useApplication, useWorkspace } from "hooks/store";
 import useToast from "hooks/use-toast";
 // ui
 import { Button, CustomSelect, Input } from "@plane/ui";
@@ -48,7 +48,9 @@ export const CreateWorkspaceForm: FC<Props> = observer((props) => {
   // router
   const router = useRouter();
   // store hooks
-  const { captureEvent } = useEventTracker();
+  const {
+    eventTracker: { postHogEventTracker },
+  } = useApplication();
   const { createWorkspace } = useWorkspace();
   // toast alert
   const { setToastAlert } = useToast();
@@ -70,7 +72,7 @@ export const CreateWorkspaceForm: FC<Props> = observer((props) => {
 
           await createWorkspace(formData)
             .then(async (res) => {
-              captureEvent("Workspace created", {
+              postHogEventTracker("WORKSPACE_CREATED", {
                 ...res,
                 state: "SUCCESS",
               });
@@ -88,7 +90,7 @@ export const CreateWorkspaceForm: FC<Props> = observer((props) => {
                 title: "Error!",
                 message: "Workspace could not be created. Please try again.",
               });
-              captureEvent("Workspace created", {
+              postHogEventTracker("WORKSPACE_CREATED", {
                 state: "FAILED",
               });
             });
@@ -100,7 +102,7 @@ export const CreateWorkspaceForm: FC<Props> = observer((props) => {
           title: "Error!",
           message: "Some error occurred while creating workspace. Please try again.",
         });
-        captureEvent("Workspace created", {
+        postHogEventTracker("WORKSPACE_CREATED", {
           state: "FAILED",
         });
       });

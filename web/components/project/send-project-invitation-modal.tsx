@@ -5,7 +5,7 @@ import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { Dialog, Transition } from "@headlessui/react";
 import { ChevronDown, Plus, X } from "lucide-react";
 // hooks
-import { useEventTracker, useMember, useUser, useWorkspace } from "hooks/store";
+import { useApplication, useMember, useUser, useWorkspace } from "hooks/store";
 import useToast from "hooks/use-toast";
 // ui
 import { Avatar, Button, CustomSelect, CustomSearchSelect } from "@plane/ui";
@@ -45,7 +45,9 @@ export const SendProjectInvitationModal: React.FC<Props> = observer((props) => {
   // toast alert
   const { setToastAlert } = useToast();
   // store hooks
-  const { captureEvent } = useEventTracker();
+  const {
+    eventTracker: { postHogEventTracker },
+  } = useApplication();
   const {
     membership: { currentProjectRole },
   } = useUser();
@@ -87,8 +89,8 @@ export const SendProjectInvitationModal: React.FC<Props> = observer((props) => {
           type: "success",
           message: "Members added successfully.",
         });
-        captureEvent(
-          "Member added",
+        postHogEventTracker(
+          "MEMBER_ADDED",
           {
             ...res,
             state: "SUCCESS",
@@ -102,8 +104,8 @@ export const SendProjectInvitationModal: React.FC<Props> = observer((props) => {
       })
       .catch((error) => {
         console.error(error);
-        captureEvent(
-          "Member added",
+        postHogEventTracker(
+          "MEMBER_ADDED",
           {
             state: "FAILED",
           },

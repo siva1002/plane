@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+
+// icons
 import { ArrowLeft, ArrowRight } from "lucide-react";
 // hooks
 import { useChart } from "../hooks";

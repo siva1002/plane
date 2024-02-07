@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import useSWR from "swr";
 import { observer } from "mobx-react-lite";
 // hooks
-import { useEventTracker, useProjectState } from "hooks/store";
+import { useApplication, useProjectState } from "hooks/store";
 // components
 import { CreateUpdateStateInline, DeleteStateModal, StateGroup, StatesListItem } from "components/states";
 // ui
@@ -21,7 +21,9 @@ export const ProjectSettingStateList: React.FC = observer(() => {
   const router = useRouter();
   const { workspaceSlug, projectId } = router.query;
   // store
-  const { setTrackElement } = useEventTracker();
+  const {
+    eventTracker: { setTrackElement },
+  } = useApplication();
   const { groupedProjectStates, projectStates, fetchProjectStates } = useProjectState();
   // state
   const [activeGroup, setActiveGroup] = useState<StateGroup>(null);

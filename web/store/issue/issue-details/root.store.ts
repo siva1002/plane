@@ -143,10 +143,8 @@ export class IssueDetail implements IIssueDetail {
     this.issue.addIssueToCycle(workspaceSlug, projectId, cycleId, issueIds);
   removeIssueFromCycle = async (workspaceSlug: string, projectId: string, cycleId: string, issueId: string) =>
     this.issue.removeIssueFromCycle(workspaceSlug, projectId, cycleId, issueId);
-  addModulesToIssue = async (workspaceSlug: string, projectId: string, issueId: string, moduleIds: string[]) =>
-    this.issue.addModulesToIssue(workspaceSlug, projectId, issueId, moduleIds);
-  removeModulesFromIssue = async (workspaceSlug: string, projectId: string, issueId: string, moduleIds: string[]) =>
-    this.issue.removeModulesFromIssue(workspaceSlug, projectId, issueId, moduleIds);
+  addIssueToModule = async (workspaceSlug: string, projectId: string, moduleId: string, issueIds: string[]) =>
+    this.issue.addIssueToModule(workspaceSlug, projectId, moduleId, issueIds);
   removeIssueFromModule = async (workspaceSlug: string, projectId: string, moduleId: string, issueId: string) =>
     this.issue.removeIssueFromModule(workspaceSlug, projectId, moduleId, issueId);
 

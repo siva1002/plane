@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { observer } from "mobx-react-lite";
 import { Check, Info, LinkIcon, Pencil, Star, Trash2, User2 } from "lucide-react";
 // hooks
-import { useModule, useUser, useEventTracker } from "hooks/store";
+import { useModule, useUser } from "hooks/store";
 import useToast from "hooks/use-toast";
 // components
 import { CreateUpdateModuleModal, DeleteModuleModal } from "components/modules";
@@ -36,7 +36,6 @@ export const ModuleListItem: React.FC<Props> = observer((props) => {
     membership: { currentProjectRole },
   } = useUser();
   const { getModuleById, addModuleToFavorites, removeModuleFromFavorites } = useModule();
-  const { setTrackElement } = useEventTracker();
   // derived values
   const moduleDetails = getModuleById(moduleId);
   const isEditingAllowed = !!currentProjectRole && currentProjectRole >= EUserProjectRoles.MEMBER;
@@ -84,14 +83,12 @@ export const ModuleListItem: React.FC<Props> = observer((props) => {
   const handleEditModule = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setTrackElement("Modules page list layout");
     setEditModal(true);
   };
 
   const handleDeleteModule = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setTrackElement("Modules page list layout");
     setDeleteModal(true);
   };
 

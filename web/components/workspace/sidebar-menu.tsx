@@ -27,21 +27,12 @@ export const WorkspaceSidebarMenu = observer(() => {
   // computed
   const workspaceMemberInfo = currentWorkspaceRole || EUserWorkspaceRoles.GUEST;
 
-  const handleLinkClick = () => {
-    if (window.innerWidth < 768) {
-      themeStore.toggleSidebar();
-    }
-  };
-
   return (
     <div className="w-full cursor-pointer space-y-2 p-4">
       {SIDEBAR_MENU_ITEMS.map(
         (link) =>
           workspaceMemberInfo >= link.access && (
-            <Link key={link.key}
-              href={`/${workspaceSlug}${link.href}`}
-              onClick={handleLinkClick}
-            >
+            <Link key={link.key} href={`/${workspaceSlug}${link.href}`}>
               <span className="block w-full my-1">
                 <Tooltip
                   tooltipContent={link.label}
@@ -50,10 +41,11 @@ export const WorkspaceSidebarMenu = observer(() => {
                   disabled={!themeStore?.sidebarCollapsed}
                 >
                   <div
-                    className={`group flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium outline-none ${link.highlight(router.asPath, `/${workspaceSlug}`)
-                      ? "bg-custom-primary-100/10 text-custom-primary-100"
-                      : "text-custom-sidebar-text-200 hover:bg-custom-sidebar-background-80 focus:bg-custom-sidebar-background-80"
-                      } ${themeStore?.sidebarCollapsed ? "justify-center" : ""}`}
+                    className={`group flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium outline-none ${
+                      link.highlight(router.asPath, `/${workspaceSlug}`)
+                        ? "bg-custom-primary-100/10 text-custom-primary-100"
+                        : "text-custom-sidebar-text-200 hover:bg-custom-sidebar-background-80 focus:bg-custom-sidebar-background-80"
+                    } ${themeStore?.sidebarCollapsed ? "justify-center" : ""}`}
                   >
                     {
                       <link.Icon

@@ -8,7 +8,6 @@ import { CreateUpdateIssueModal, CreateUpdateDraftIssueModal } from "components/
 import { Minimize2, Maximize2, Circle, Plus } from "lucide-react";
 // hooks
 import useToast from "hooks/use-toast";
-import { useEventTracker } from "hooks/store";
 // mobx
 import { observer } from "mobx-react-lite";
 // types
@@ -45,12 +44,10 @@ export const HeaderGroupByCard: FC<IHeaderGroupByCard> = observer((props) => {
     addIssuesToView,
   } = props;
   const verticalAlignPosition = sub_group_by ? false : kanbanFilters?.group_by.includes(column_id);
-  // states
+
   const [isOpen, setIsOpen] = React.useState(false);
   const [openExistingIssueListModal, setOpenExistingIssueListModal] = React.useState(false);
-  // hooks
-  const { setTrackElement } = useEventTracker();
-  // router
+
   const router = useRouter();
   const { workspaceSlug, projectId, moduleId, cycleId } = router.query;
 
@@ -59,7 +56,7 @@ export const HeaderGroupByCard: FC<IHeaderGroupByCard> = observer((props) => {
   const { setToastAlert } = useToast();
 
   const renderExistingIssueModal = moduleId || cycleId;
-  const ExistingIssuesListModalPayload = moduleId ? { module: [moduleId.toString()] } : { cycle: true };
+  const ExistingIssuesListModalPayload = moduleId ? { module: true } : { cycle: true };
 
   const handleAddIssuesToView = async (data: ISearchIssueResponse[]) => {
     if (!workspaceSlug || !projectId) return;
@@ -79,14 +76,21 @@ export const HeaderGroupByCard: FC<IHeaderGroupByCard> = observer((props) => {
 
   return (
     <>
-      <CreateUpdateIssueModal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        data={issuePayload}
-        storeType={storeType}
-        isDraft={isDraftIssue}
-      />
-
+      {isDraftIssue ? (
+        <CreateUpdateDraftIssueModal
+          isOpen={isOpen}
+          handleClose={() => setIsOpen(false)}
+          prePopulateData={issuePayload}
+          fieldsToShow={["all"]}
+        />
+      ) : (
+        <CreateUpdateIssueModal
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          data={issuePayload}
+          storeType={storeType}
+        />
+      )}
       {renderExistingIssueModal && (
         <ExistingIssuesListModal
           workspaceSlug={workspaceSlug?.toString()}
@@ -139,30 +143,17 @@ export const HeaderGroupByCard: FC<IHeaderGroupByCard> = observer((props) => {
                 </span>
               }
             >
-              <CustomMenu.MenuItem
-                onClick={() => {
-                  setTrackElement("Kanban layout");
-                  setIsOpen(true);
-                }}
-              >
+              <CustomMenu.MenuItem onClick={() => setIsOpen(true)}>
                 <span className="flex items-center justify-start gap-2">Create issue</span>
               </CustomMenu.MenuItem>
-              <CustomMenu.MenuItem
-                onClick={() => {
-                  setTrackElement("Kanban layout");
-                  setOpenExistingIssueListModal(true);
-                }}
-              >
+              <CustomMenu.MenuItem onClick={() => setOpenExistingIssueListModal(true)}>
                 <span className="flex items-center justify-start gap-2">Add an existing issue</span>
               </CustomMenu.MenuItem>
             </CustomMenu>
           ) : (
             <div
               className="flex h-[20px] w-[20px] flex-shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-sm transition-all hover:bg-custom-background-80"
-              onClick={() => {
-                setTrackElement("Kanban layout");
-                setIsOpen(true);
-              }}
+              onClick={() => setIsOpen(true)}
             >
               <Plus width={14} strokeWidth={2} />
             </div>

@@ -20,6 +20,7 @@ class APIKeyAuthentication(authentication.BaseAuthentication):
     auth_header_name = "X-Api-Key"
 
     def get_api_token(self, request):
+        
         return request.headers.get(self.auth_header_name)
 
     def validate_api_token(self, token):
@@ -42,6 +43,7 @@ class APIKeyAuthentication(authentication.BaseAuthentication):
 
     def authenticate(self, request):
         token = self.get_api_token(request=request)
+        print(token)
         if not token:
             return None
 

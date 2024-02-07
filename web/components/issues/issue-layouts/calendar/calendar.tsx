@@ -31,21 +31,11 @@ type Props = {
     viewId?: string
   ) => Promise<TIssue | undefined>;
   viewId?: string;
-  readOnly?: boolean;
 };
 
 export const CalendarChart: React.FC<Props> = observer((props) => {
-  const {
-    issuesFilterStore,
-    issues,
-    groupedIssueIds,
-    layout,
-    showWeekends,
-    quickActions,
-    quickAddCallback,
-    viewId,
-    readOnly = false,
-  } = props;
+  const { issuesFilterStore, issues, groupedIssueIds, layout, showWeekends, quickActions, quickAddCallback, viewId } =
+    props;
   // store hooks
   const {
     issues: { viewFlags },
@@ -90,7 +80,6 @@ export const CalendarChart: React.FC<Props> = observer((props) => {
                     quickActions={quickActions}
                     quickAddCallback={quickAddCallback}
                     viewId={viewId}
-                    readOnly={readOnly}
                   />
                 ))}
             </div>
@@ -106,7 +95,6 @@ export const CalendarChart: React.FC<Props> = observer((props) => {
               quickActions={quickActions}
               quickAddCallback={quickAddCallback}
               viewId={viewId}
-              readOnly={readOnly}
             />
           )}
         </div>

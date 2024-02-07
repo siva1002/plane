@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
-import { DragDropContext, Draggable, DropResult, Droppable } from "@hello-pangea/dnd";
+import { DragDropContext, Draggable, DropResult } from "@hello-pangea/dnd";
+import StrictModeDroppable from "components/dnd/StrictModeDroppable";
 import { MoreVertical } from "lucide-react";
 // hooks
 import { useChart } from "components/gantt-chart/hooks";
@@ -82,7 +83,7 @@ export const CycleGanttSidebar: React.FC<Props> = (props) => {
 
   return (
     <DragDropContext onDragEnd={handleOrderChange}>
-      <Droppable droppableId="gantt-sidebar">
+      <StrictModeDroppable droppableId="gantt-sidebar">
         {(droppableProvided) => (
           <div
             id={`gantt-sidebar-${cycleId}`}
@@ -152,7 +153,7 @@ export const CycleGanttSidebar: React.FC<Props> = (props) => {
             </>
           </div>
         )}
-      </Droppable>
+      </StrictModeDroppable>
     </DragDropContext>
   );
 };

@@ -1,5 +1,6 @@
 import React, { Fragment, useRef, useState } from "react";
 import { useRouter } from "next/router";
+import useSWR from "swr";
 import { Combobox } from "@headlessui/react";
 import { usePopper } from "react-popper";
 import { observer } from "mobx-react-lite";
@@ -47,34 +48,14 @@ export const IssueLabelSelect: React.FC<Props> = observer((props) => {
   const filteredOptions =
     query === "" ? projectLabels : projectLabels?.filter((l) => l.name.toLowerCase().includes(query.toLowerCase()));
 
-  const onOpen = () => {
+  const openDropdown = () => {
+    setIsDropdownOpen(true);
     if (!projectLabels && workspaceSlug && projectId) fetchProjectLabels(workspaceSlug.toString(), projectId);
     if (referenceElement) referenceElement.focus();
   };
-
-  const handleClose = () => {
-    if (isDropdownOpen) setIsDropdownOpen(false);
-    if (referenceElement) referenceElement.blur();
-  };
-
-  const toggleDropdown = () => {
-    if (!isDropdownOpen) onOpen();
-    setIsDropdownOpen((prevIsOpen) => !prevIsOpen);
-  };
-
-  const dropdownOnChange = (val: string[]) => {
-    onChange(val);
-  };
-
-  const handleKeyDown = useDropdownKeyDown(toggleDropdown, handleClose);
-
-  const handleOnClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.stopPropagation();
-    e.preventDefault();
-    toggleDropdown();
-  };
-
-  useOutsideClickDetector(dropdownRef, handleClose);
+  const closeDropdown = () => setIsDropdownOpen(false);
+  const handleKeyDown = useDropdownKeyDown(openDropdown, closeDropdown, isDropdownOpen);
+  useOutsideClickDetector(dropdownRef, closeDropdown);
 
   return (
     <Combobox
@@ -82,7 +63,7 @@ export const IssueLabelSelect: React.FC<Props> = observer((props) => {
       ref={dropdownRef}
       tabIndex={tabIndex}
       value={value}
-      onChange={dropdownOnChange}
+      onChange={(val) => onChange(val)}
       className="relative flex-shrink-0 h-full"
       multiple
       disabled={disabled}
@@ -93,7 +74,7 @@ export const IssueLabelSelect: React.FC<Props> = observer((props) => {
           type="button"
           ref={setReferenceElement}
           className="h-full flex cursor-pointer items-center gap-2 text-xs text-custom-text-200"
-          onClick={handleOnClick}
+          onClick={openDropdown}
         >
           {label ? (
             label

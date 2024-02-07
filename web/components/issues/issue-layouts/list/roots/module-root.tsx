@@ -51,7 +51,11 @@ export const ModuleListLayout: React.FC = observer(() => {
       storeType={EIssuesStoreType.MODULE}
       addIssuesToView={(issueIds: string[]) => {
         if (!workspaceSlug || !projectId || !moduleId) throw new Error();
+<<<<<<< HEAD
+        return issues.addIssueToModule(workspaceSlug.toString(), projectId.toString(), moduleId.toString(), issueIds);
+=======
         return issues.addIssuesToModule(workspaceSlug.toString(), projectId.toString(), moduleId.toString(), issueIds);
+>>>>>>> aee54976f06ad9538473aceb8794ab27259adebc
       }}
     />
   );

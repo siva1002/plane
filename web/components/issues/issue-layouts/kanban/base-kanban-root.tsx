@@ -3,7 +3,7 @@ import { DragDropContext, DragStart, DraggableLocation, DropResult, Droppable } 
 import { useRouter } from "next/router";
 import { observer } from "mobx-react-lite";
 // hooks
-import { useEventTracker, useUser } from "hooks/store";
+import { useUser } from "hooks/store";
 import useToast from "hooks/use-toast";
 // ui
 import { Spinner } from "@plane/ui";
@@ -44,9 +44,8 @@ export interface IBaseKanBanLayout {
   showLoader?: boolean;
   viewId?: string;
   storeType?: TCreateModalStoreTypes;
-  addIssuesToView?: (issueIds: string[]) => Promise<any>;
+  addIssuesToView?: (issueIds: string[]) => Promise<TIssue>;
   canEditPropertiesBasedOnProject?: (projectId: string) => boolean;
-  isCompletedCycle?: boolean;
 }
 
 type KanbanDragState = {
@@ -66,7 +65,6 @@ export const BaseKanBanRoot: React.FC<IBaseKanBanLayout> = observer((props: IBas
     storeType,
     addIssuesToView,
     canEditPropertiesBasedOnProject,
-    isCompletedCycle = false,
   } = props;
   // router
   const router = useRouter();
@@ -75,7 +73,6 @@ export const BaseKanBanRoot: React.FC<IBaseKanBanLayout> = observer((props: IBas
   const {
     membership: { currentProjectRole },
   } = useUser();
-  const { captureIssueEvent } = useEventTracker();
   const { issueMap } = useIssues();
   // toast alert
   const { setToastAlert } = useToast();
@@ -185,7 +182,6 @@ export const BaseKanBanRoot: React.FC<IBaseKanBanLayout> = observer((props: IBas
         handleRemoveFromView={
           issueActions[EIssueActions.REMOVE] ? async () => handleIssues(issue, EIssueActions.REMOVE) : undefined
         }
-        readOnly={!isEditingAllowed || isCompletedCycle}
       />
     ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -209,11 +205,6 @@ export const BaseKanBanRoot: React.FC<IBaseKanBanLayout> = observer((props: IBas
       handleIssues(issueMap[dragState.draggedIssueId!], EIssueActions.DELETE);
       setDeleteIssueModal(false);
       setDragState({});
-      captureIssueEvent({
-        eventName: "Issue deleted",
-        payload: { id: dragState.draggedIssueId!, state: "FAILED", element: "Kanban layout drag & drop" },
-        path: router.asPath,
-      });
     });
   };
 
@@ -246,7 +237,7 @@ export const BaseKanBanRoot: React.FC<IBaseKanBanLayout> = observer((props: IBas
       )}
 
       <div className="horizontal-scroll-enable relative h-full w-full overflow-auto bg-custom-background-90">
-        <div className="relative h-max w-max min-w-full bg-custom-background-90 px-2">
+        <div className="relative h-full w-max min-w-full bg-custom-background-90 px-2">
           <DragDropContext onDragStart={onDragStart} onDragEnd={onDragEnd}>
             {/* drag and delete component */}
             <div
@@ -285,7 +276,7 @@ export const BaseKanBanRoot: React.FC<IBaseKanBanLayout> = observer((props: IBas
               showEmptyGroup={userDisplayFilters?.show_empty_groups || true}
               quickAddCallback={issues?.quickAddIssue}
               viewId={viewId}
-              disableIssueCreation={!enableIssueCreation || !isEditingAllowed || isCompletedCycle}
+              disableIssueCreation={!enableIssueCreation || !isEditingAllowed}
               canEditProperties={canEditProperties}
               storeType={storeType}
               addIssuesToView={addIssuesToView}

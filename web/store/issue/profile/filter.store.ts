@@ -93,6 +93,7 @@ export class ProfileIssuesFilter extends IssueFilterHelperStore implements IProf
       filteredParams
     );
 
+    if (userFilters?.displayFilters?.layout === "gantt_chart") filteredRouteParams.start_target_date = true;
     if (userFilters?.displayFilters?.layout === "spreadsheet") filteredRouteParams.sub_issue = false;
 
     return filteredRouteParams;

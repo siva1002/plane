@@ -1,4 +1,4 @@
-import React, { FC, useState, useRef, useEffect, Fragment } from "react";
+import React, { FC, useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
 import { observer } from "mobx-react-lite";
 import { Controller, useForm } from "react-hook-form";
@@ -44,7 +44,7 @@ const defaultValues: Partial<TIssue> = {
   assignee_ids: [],
   label_ids: [],
   cycle_id: null,
-  module_ids: null,
+  module_id: null,
   start_date: null,
   target_date: null,
 };
@@ -55,9 +55,8 @@ export interface IssueFormProps {
   onCreateMoreToggleChange: (value: boolean) => void;
   onChange?: (formData: Partial<TIssue> | null) => void;
   onClose: () => void;
-  onSubmit: (values: Partial<TIssue>, is_draft_issue?: boolean) => Promise<void>;
+  onSubmit: (values: Partial<TIssue>) => Promise<void>;
   projectId: string;
-  isDraft: boolean;
 }
 
 // services
@@ -73,7 +72,6 @@ export const IssueFormRoot: FC<IssueFormProps> = observer((props) => {
     projectId: defaultProjectId,
     isCreateMoreToggleEnabled,
     onCreateMoreToggleChange,
-    isDraft,
   } = props;
   // states
   const [labelModal, setLabelModal] = useState(false);
@@ -134,13 +132,12 @@ export const IssueFormRoot: FC<IssueFormProps> = observer((props) => {
         parent_id: formData.parent_id,
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 
   const issueName = watch("name");
 
-  const handleFormSubmit = async (formData: Partial<TIssue>, is_draft_issue = false) => {
-    await onSubmit(formData, is_draft_issue);
+  const handleFormSubmit = async (formData: Partial<TIssue>) => {
+    await onSubmit(formData);
 
     setGptAssistantModal(false);
 
@@ -250,7 +247,7 @@ export const IssueFormRoot: FC<IssueFormProps> = observer((props) => {
           }}
         />
       )}
-      <form>
+      <form onSubmit={handleSubmit(handleFormSubmit)}>
         <div className="space-y-5">
           <div className="flex items-center gap-x-2">
             {/* Don't show project selection if editing an issue */}
@@ -270,7 +267,6 @@ export const IssueFormRoot: FC<IssueFormProps> = observer((props) => {
                         handleFormChange();
                       }}
                       buttonVariant="border-with-text"
-                      // TODO: update tabIndex logic
                       tabIndex={19}
                     />
                   </div>
@@ -545,23 +541,21 @@ export const IssueFormRoot: FC<IssueFormProps> = observer((props) => {
                     )}
                   />
                 )}
-                {projectDetails?.module_view && workspaceSlug && (
+                {projectDetails?.module_view && (
                   <Controller
                     control={control}
-                    name="module_ids"
+                    name="module_id"
                     render={({ field: { value, onChange } }) => (
                       <div className="h-7">
                         <ModuleDropdown
                           projectId={projectId}
-                          value={value ?? []}
-                          onChange={(moduleIds) => {
-                            onChange(moduleIds);
+                          value={value}
+                          onChange={(moduleId) => {
+                            onChange(moduleId);
                             handleFormChange();
                           }}
                           buttonVariant="border-with-text"
                           tabIndex={13}
-                          multiple
-                          showCount
                         />
                       </div>
                     )}
@@ -672,40 +666,7 @@ export const IssueFormRoot: FC<IssueFormProps> = observer((props) => {
             <Button variant="neutral-primary" size="sm" onClick={onClose} tabIndex={17}>
               Discard
             </Button>
-
-            {isDraft && (
-              <Fragment>
-                {data?.id ? (
-                  <Button
-                    variant="neutral-primary"
-                    size="sm"
-                    loading={isSubmitting}
-                    onClick={handleSubmit((data) => handleFormSubmit({ ...data, is_draft: false }))}
-                    tabIndex={18}
-                  >
-                    {isSubmitting ? "Moving" : "Move from draft"}
-                  </Button>
-                ) : (
-                  <Button
-                    variant="neutral-primary"
-                    size="sm"
-                    loading={isSubmitting}
-                    onClick={handleSubmit((data) => handleFormSubmit(data, true))}
-                    tabIndex={18}
-                  >
-                    {isSubmitting ? "Saving" : "Save as draft"}
-                  </Button>
-                )}
-              </Fragment>
-            )}
-
-            <Button
-              variant="primary"
-              size="sm"
-              loading={isSubmitting}
-              tabIndex={isDraft ? 19 : 18}
-              onClick={handleSubmit((data) => handleFormSubmit(data))}
-            >
+            <Button type="submit" variant="primary" size="sm" loading={isSubmitting} tabIndex={18}>
               {data?.id ? (isSubmitting ? "Updating" : "Update issue") : isSubmitting ? "Creating" : "Create issue"}
             </Button>
           </div>

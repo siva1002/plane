@@ -314,7 +314,6 @@ export const ChartViewRoot: FC<ChartViewRootProps> = (props) => {
               enableBlockLeftResize={enableBlockLeftResize}
               enableBlockRightResize={enableBlockRightResize}
               enableBlockMove={enableBlockMove}
-              showAllBlocks={showAllBlocks}
             />
           )}
         </div>

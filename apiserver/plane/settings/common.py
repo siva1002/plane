@@ -19,10 +19,10 @@ from sentry_sdk.integrations.celery import CeleryIntegration
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Secret Key
-SECRET_KEY = os.environ.get("SECRET_KEY", get_random_secret_key())
+SECRET_KEY = os.environ.get("SECRET_KEY", "q8h3oip7cwbsnqee7fzbi9gfrv5m26on9sumggkky4v1ouo7j4")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 # Allowed Hosts
 ALLOWED_HOSTS = ["*"]
@@ -74,7 +74,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",
     ),
-    "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
+    "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer","rest_framework.renderers.BrowsableAPIRenderer"),
     "DEFAULT_FILTER_BACKENDS": (
         "django_filters.rest_framework.DjangoFilterBackend",
     ),
@@ -134,24 +134,24 @@ SITE_ID = 1
 AUTH_USER_MODEL = "db.User"
 
 # Database
-if bool(os.environ.get("DATABASE_URL")):
-    # Parse database configuration from $DATABASE_URL
-    DATABASES = {
-        "default": dj_database_url.config(),
+# if bool(os.environ.get("DATABASE_URL")):
+#     # Parse database configuration from $DATABASE_URL
+#     DATABASES = {
+#         "default": dj_database_url.config(),
+#     }
+# else:
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "planelocal",
+        "USER": "postgres",
+        "PASSWORD": "root",
+        "HOST": "localhost",
     }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.environ.get("POSTGRES_DB"),
-            "USER": os.environ.get("POSTGRES_USER"),
-            "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
-            "HOST": os.environ.get("POSTGRES_HOST"),
-        }
-    }
+}
 
 # Redis Config
-REDIS_URL = os.environ.get("REDIS_URL")
+REDIS_URL = os.environ.get("REDIS_URL","redis://localhost:6379")
 REDIS_SSL = REDIS_URL and "rediss" in REDIS_URL
 
 if REDIS_SSL:
@@ -282,8 +282,10 @@ if REDIS_SSL:
     redis_url = os.environ.get("REDIS_URL")
     broker_url = f"{redis_url}?ssl_cert_reqs={ssl.CERT_NONE.name}&ssl_ca_certs={certifi.where()}"
     CELERY_BROKER_URL = broker_url
+    CELERY_RESULT_BACKEND = broker_url
 else:
     CELERY_BROKER_URL = REDIS_URL
+    CELERY_RESULT_BACKEND = REDIS_URL
 
 CELERY_IMPORTS = (
     "plane.bgtasks.issue_automation_task",

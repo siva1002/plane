@@ -6,7 +6,7 @@ import { TIssue } from "@plane/types";
 
 type Props = {
   issue: TIssue;
-  onChange: (issue: TIssue, data: Partial<TIssue>, updates: any) => void;
+  onChange: (issue: TIssue, data: Partial<TIssue>) => void;
   disabled: boolean;
 };
 
@@ -17,9 +17,7 @@ export const SpreadsheetEstimateColumn: React.FC<Props> = observer((props: Props
     <div className="h-11 border-b-[0.5px] border-custom-border-200">
       <EstimateDropdown
         value={issue.estimate_point}
-        onChange={(data) =>
-          onChange(issue, { estimate_point: data }, { changed_property: "estimate_point", change_details: data })
-        }
+        onChange={(data) => onChange(issue, { estimate_point: data })}
         projectId={issue.project_id}
         disabled={disabled}
         buttonVariant="transparent-with-text"

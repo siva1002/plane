@@ -641,6 +641,7 @@ class IssueLiteSerializer(DynamicBaseSerializer):
         model = Issue
         fields = "__all__"
         read_only_fields = [
+            "name",
             "start_date",
             "target_date",
             "completed_at",

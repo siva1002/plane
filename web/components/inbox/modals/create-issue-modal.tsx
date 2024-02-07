@@ -6,7 +6,7 @@ import { Controller, useForm } from "react-hook-form";
 import { RichTextEditorWithRef } from "@plane/rich-text-editor";
 import { Sparkle } from "lucide-react";
 // hooks
-import { useApplication, useEventTracker, useWorkspace, useInboxIssues, useMention } from "hooks/store";
+import { useApplication, useWorkspace, useInboxIssues, useMention } from "hooks/store";
 import useToast from "hooks/use-toast";
 // services
 import { FileService } from "services/file.service";
@@ -63,8 +63,8 @@ export const CreateInboxIssueModal: React.FC<Props> = observer((props) => {
   } = useInboxIssues();
   const {
     config: { envConfig },
+    eventTracker: { postHogEventTracker },
   } = useApplication();
-  const { captureIssueEvent } = useEventTracker();
   const { currentWorkspace } = useWorkspace();
 
   const {
@@ -93,37 +93,32 @@ export const CreateInboxIssueModal: React.FC<Props> = observer((props) => {
           router.push(`/${workspaceSlug}/projects/${projectId}/inbox/${inboxId}?inboxIssueId=${res.id}`);
           handleClose();
         } else reset(defaultValues);
-        captureIssueEvent({
-          eventName: "Issue created",
-          payload: {
-            ...formData,
+        postHogEventTracker(
+          "ISSUE_CREATED",
+          {
+            ...res,
             state: "SUCCESS",
-            element: "Inbox page",
           },
-          group: {
+          {
             isGrouping: true,
             groupType: "Workspace_metrics",
             groupId: currentWorkspace?.id!,
-          },
-          path: router.pathname,
-        });
+          }
+        );
       })
       .catch((error) => {
         console.error(error);
-        captureIssueEvent({
-          eventName: "Issue created",
-          payload: {
-            ...formData,
+        postHogEventTracker(
+          "ISSUE_CREATED",
+          {
             state: "FAILED",
-            element: "Inbox page",
           },
-          group: {
+          {
             isGrouping: true,
             groupType: "Workspace_metrics",
             groupId: currentWorkspace?.id!,
-          },
-          path: router.pathname,
-        });
+          }
+        );
       });
   };
 

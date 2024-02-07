@@ -33,6 +33,7 @@ class CycleWriteSerializer(BaseSerializer):
 
 
 class CycleSerializer(BaseSerializer):
+    owned_by = UserLiteSerializer(read_only=True)
     is_favorite = serializers.BooleanField(read_only=True)
     total_issues = serializers.IntegerField(read_only=True)
     cancelled_issues = serializers.IntegerField(read_only=True)

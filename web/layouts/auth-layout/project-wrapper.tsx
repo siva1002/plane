@@ -5,7 +5,6 @@ import useSWR from "swr";
 // hooks
 import {
   useApplication,
-  useEventTracker,
   useCycle,
   useEstimate,
   useLabel,
@@ -35,7 +34,6 @@ export const ProjectAuthWrapper: FC<IProjectAuthWrapper> = observer((props) => {
   const {
     commandPalette: { toggleCreateProjectModal },
   } = useApplication();
-  const { setTrackElement } = useEventTracker();
   const {
     membership: { fetchUserProjectInfo, projectMemberInfo, hasPermissionToProject },
   } = useUser();
@@ -137,10 +135,7 @@ export const ProjectAuthWrapper: FC<IProjectAuthWrapper> = observer((props) => {
           image={emptyProject}
           primaryButton={{
             text: "Create Project",
-            onClick: () => {
-              setTrackElement("Projects page empty state");
-              toggleCreateProjectModal(true);
-            },
+            onClick: () => toggleCreateProjectModal(true),
           }}
         />
       </div>

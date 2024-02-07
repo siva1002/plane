@@ -28,7 +28,6 @@ type Props = {
     viewId?: string
   ) => Promise<TIssue | undefined>;
   viewId?: string;
-  readOnly?: boolean;
 };
 
 export const CalendarDayTile: React.FC<Props> = observer((props) => {
@@ -42,7 +41,6 @@ export const CalendarDayTile: React.FC<Props> = observer((props) => {
     disableIssueCreation,
     quickAddCallback,
     viewId,
-    readOnly = false,
   } = props;
   const [showAllIssues, setShowAllIssues] = useState(false);
   const calendarLayout = issuesFilterStore?.issueFilters?.displayFilters?.calendar?.layout ?? "month";
@@ -75,7 +73,7 @@ export const CalendarDayTile: React.FC<Props> = observer((props) => {
 
         {/* content */}
         <div className="h-full w-full">
-          <Droppable droppableId={formattedDatePayload} isDropDisabled={readOnly}>
+          <Droppable droppableId={formattedDatePayload} isDropDisabled={false}>
             {(provided, snapshot) => (
               <div
                 className={`h-full w-full select-none overflow-y-auto ${
@@ -91,10 +89,9 @@ export const CalendarDayTile: React.FC<Props> = observer((props) => {
                   issueIdList={issueIdList}
                   quickActions={quickActions}
                   showAllIssues={showAllIssues}
-                  isDragDisabled={readOnly}
                 />
 
-                {enableQuickIssueCreate && !disableIssueCreation && !readOnly && (
+                {enableQuickIssueCreate && !disableIssueCreation && (
                   <div className="px-2 py-1">
                     <CalendarQuickAddIssueForm
                       formKey="target_date"

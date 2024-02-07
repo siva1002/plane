@@ -5,7 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Dialog, Transition } from "@headlessui/react";
 import { AlertTriangle } from "lucide-react";
 // hooks
-import { useEventTracker, useWorkspace } from "hooks/store";
+import { useApplication, useWorkspace } from "hooks/store";
 import useToast from "hooks/use-toast";
 // ui
 import { Button, Input } from "@plane/ui";
@@ -28,7 +28,9 @@ export const DeleteWorkspaceModal: React.FC<Props> = observer((props) => {
   // router
   const router = useRouter();
   // store hooks
-  const { captureEvent } = useEventTracker();
+  const {
+    eventTracker: { postHogEventTracker },
+  } = useApplication();
   const { deleteWorkspace } = useWorkspace();
   // toast alert
   const { setToastAlert } = useToast();
@@ -59,7 +61,7 @@ export const DeleteWorkspaceModal: React.FC<Props> = observer((props) => {
       .then((res) => {
         handleClose();
         router.push("/");
-        captureEvent("Workspace deleted", {
+        postHogEventTracker("WORKSPACE_DELETED", {
           res,
           state: "SUCCESS",
         });
@@ -75,7 +77,7 @@ export const DeleteWorkspaceModal: React.FC<Props> = observer((props) => {
           title: "Error!",
           message: "Something went wrong. Please try again later.",
         });
-        captureEvent("Workspace deleted", {
+        postHogEventTracker("WORKSPACE_DELETED", {
           state: "FAILED",
         });
       });

@@ -152,7 +152,7 @@ export const DraftIssueForm: FC<IssueFormProps> = observer((props) => {
     project_id: watch("project_id"),
     parent_id: watch("parent_id"),
     cycle_id: watch("cycle_id"),
-    module_ids: watch("module_ids"),
+    module_id: watch("module_id"),
   };
 
   useEffect(() => {
@@ -169,6 +169,17 @@ export const DraftIssueForm: FC<IssueFormProps> = observer((props) => {
   // const onClose = () => {
   //   handleClose();
   // };
+
+  useEffect(() => {
+    if (!isOpen || data) return;
+
+    setLocalStorageValue(
+      JSON.stringify({
+        ...payload,
+      })
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(payload), isOpen, data]);
 
   // const onClose = () => {
   //   handleClose();
@@ -247,7 +258,13 @@ export const DraftIssueForm: FC<IssueFormProps> = observer((props) => {
 
   useEffect(() => {
     setFocus("name");
-  }, [setFocus]);
+
+    reset({
+      ...defaultValues,
+      ...(prePopulatedData ?? {}),
+      ...(data ?? {}),
+    });
+  }, [setFocus, prePopulatedData, reset, data]);
 
   // update projectId in form when projectId changes
   useEffect(() => {
@@ -553,25 +570,22 @@ export const DraftIssueForm: FC<IssueFormProps> = observer((props) => {
                     )}
                   />
                 )}
-
-                {projectDetails?.module_view && workspaceSlug && (
+                {projectDetails?.module_view && (
                   <Controller
                     control={control}
-                    name="module_ids"
+                    name="module_id"
                     render={({ field: { value, onChange } }) => (
                       <div className="h-7">
                         <ModuleDropdown
                           projectId={projectId}
-                          value={value ?? []}
-                          onChange={onChange}
+                          value={value}
+                          onChange={(moduleId) => onChange(moduleId)}
                           buttonVariant="border-with-text"
-                          multiple
                         />
                       </div>
                     )}
                   />
                 )}
-
                 {(fieldsToShow.includes("all") || fieldsToShow.includes("estimate")) &&
                   areEstimatesEnabledForProject(projectId) && (
                     <Controller

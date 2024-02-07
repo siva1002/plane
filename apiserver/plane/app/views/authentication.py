@@ -26,6 +26,7 @@ from plane.db.models import (
     ProjectMemberInvite,
     ProjectMember,
 )
+from plane.app.serializers.user import UserSerializer
 from plane.settings.redis import redis_instance
 from plane.license.models import Instance
 from plane.license.utils.instance_value import get_configuration_value
@@ -42,6 +43,7 @@ def get_tokens_for_user(user):
 
 class SignUpEndpoint(BaseAPIView):
     permission_classes = (AllowAny,)
+    serializer_class = UserSerializer
 
     def post(self, request):
         # Check if the instance configuration is done
@@ -324,7 +326,7 @@ class MagicSignInEndpoint(BaseAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        user_token = request.data.get("token", "").strip()
+        user_token  = request.data.get("token", "").strip()
         key = request.data.get("key", "").strip().lower()
 
         if not key or user_token == "":

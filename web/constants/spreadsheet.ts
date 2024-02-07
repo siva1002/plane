@@ -26,11 +26,7 @@ export const SPREADSHEET_PROPERTY_DETAILS: {
     descendingOrderKey: TIssueOrderByOptions;
     descendingOrderTitle: string;
     icon: FC<ISvgIcons>;
-    Column: React.FC<{
-      issue: TIssue;
-      onChange: (issue: TIssue, data: Partial<TIssue>, updates: any) => void;
-      disabled: boolean;
-    }>;
+    Column: React.FC<{ issue: TIssue; onChange: (issue: TIssue, data: Partial<TIssue>) => void; disabled: boolean }>;
   };
 } = {
   assignee: {

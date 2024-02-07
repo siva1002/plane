@@ -2,7 +2,6 @@ import { FC } from "react";
 // ui
 import { Breadcrumbs } from "@plane/ui";
 import { Settings } from "lucide-react";
-import { BreadcrumbLink } from "components/common";
 
 interface IProfileSettingHeader {
   title: string;
@@ -18,15 +17,11 @@ export const ProfileSettingsHeader: FC<IProfileSettingHeader> = (props) => {
           <Breadcrumbs>
             <Breadcrumbs.BreadcrumbItem
               type="text"
-              link={
-                <BreadcrumbLink
-                  href="/profile"
-                  label="My Profile"
-                  icon={<Settings className="h-4 w-4 text-custom-text-300" />}
-                />
-              }
+              label="My Profile"
+              icon={<Settings className="h-4 w-4 text-custom-text-300" />}
+              link="/profile"
             />
-            <Breadcrumbs.BreadcrumbItem type="text" link={<BreadcrumbLink label={title} />} />
+            <Breadcrumbs.BreadcrumbItem type="text" label={title} />
           </Breadcrumbs>
         </div>
       </div>

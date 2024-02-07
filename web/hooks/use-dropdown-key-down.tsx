@@ -1,23 +1,23 @@
 import { useCallback } from "react";
 
 type TUseDropdownKeyDown = {
-  (onEnterKeyDown: () => void, onEscKeyDown: () => void): (event: React.KeyboardEvent<HTMLElement>) => void;
+  (onOpen: () => void, onClose: () => void, isOpen: boolean): (event: React.KeyboardEvent<HTMLElement>) => void;
 };
 
-export const useDropdownKeyDown: TUseDropdownKeyDown = (onEnterKeyDown, onEscKeyDown) => {
+export const useDropdownKeyDown: TUseDropdownKeyDown = (onOpen, onClose, isOpen) => {
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLElement>) => {
       if (event.key === "Enter") {
         event.stopPropagation();
-        event.preventDefault();
-        onEnterKeyDown();
-      } else if (event.key === "Escape") {
+        if (!isOpen) {
+          onOpen();
+        }
+      } else if (event.key === "Escape" && isOpen) {
         event.stopPropagation();
-        event.preventDefault();
-        onEscKeyDown();
+        onClose();
       }
     },
-    [onEnterKeyDown, onEscKeyDown]
+    [isOpen, onOpen, onClose]
   );
 
   return handleKeyDown;

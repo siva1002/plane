@@ -32,6 +32,7 @@ class APIKeyAuthentication(authentication.BaseAuthentication):
                 token=token,
                 is_active=True,
             )
+            print(api_token)
         except APIToken.DoesNotExist:
             raise AuthenticationFailed("Given API token is not valid")
 
@@ -47,4 +48,5 @@ class APIKeyAuthentication(authentication.BaseAuthentication):
 
         # Validate the API token
         user, token = self.validate_api_token(token)
+        print(user,token)
         return user, token

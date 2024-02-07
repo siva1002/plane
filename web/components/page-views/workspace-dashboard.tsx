@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useTheme } from "next-themes";
 import { observer } from "mobx-react-lite";
 // hooks
-import { useApplication, useEventTracker, useDashboard, useProject, useUser } from "hooks/store";
+import { useApplication, useDashboard, useProject, useUser } from "hooks/store";
 // components
 import { TourRoot } from "components/onboarding";
 import { UserGreetingsView } from "components/user";
@@ -18,9 +18,9 @@ export const WorkspaceDashboardView = observer(() => {
   // theme
   const { resolvedTheme } = useTheme();
   // store hooks
-  const { captureEvent, setTrackElement } = useEventTracker();
   const {
     commandPalette: { toggleCreateProjectModal },
+    eventTracker: { postHogEventTracker },
     router: { workspaceSlug },
   } = useApplication();
   const {
@@ -37,7 +37,7 @@ export const WorkspaceDashboardView = observer(() => {
   const handleTourCompleted = () => {
     updateTourCompleted()
       .then(() => {
-        captureEvent("User tour complete", {
+        postHogEventTracker("USER_TOUR_COMPLETE", {
           user_id: currentUser?.id,
           email: currentUser?.email,
           state: "SUCCESS",
@@ -62,18 +62,16 @@ export const WorkspaceDashboardView = observer(() => {
       {homeDashboardId && joinedProjectIds ? (
         <>
           {joinedProjectIds.length > 0 ? (
-            <>
+            <div className="space-y-7 p-7 bg-custom-background-90 h-full w-full flex flex-col overflow-y-auto">
               <IssuePeekOverview />
-              <div className="space-y-7 p-7 bg-custom-background-90 h-full w-full flex flex-col overflow-y-auto">
-                {currentUser && <UserGreetingsView user={currentUser} />}
-                {currentUser && !currentUser.is_tour_completed && (
-                  <div className="fixed left-0 top-0 z-20 grid h-full w-full place-items-center bg-custom-backdrop bg-opacity-50 transition-opacity">
-                    <TourRoot onComplete={handleTourCompleted} />
-                  </div>
-                )}
-                <DashboardWidgets />
-              </div>
-            </>
+              {currentUser && <UserGreetingsView user={currentUser} />}
+              {currentUser && !currentUser.is_tour_completed && (
+                <div className="fixed left-0 top-0 z-20 grid h-full w-full place-items-center bg-custom-backdrop bg-opacity-50 transition-opacity">
+                  <TourRoot onComplete={handleTourCompleted} />
+                </div>
+              )}
+              <DashboardWidgets />
+            </div>
           ) : (
             <EmptyState
               image={emptyStateImage}
@@ -83,10 +81,7 @@ export const WorkspaceDashboardView = observer(() => {
             progress."
               primaryButton={{
                 text: "Build your first project",
-                onClick: () => {
-                  setTrackElement("Dashboard");
-                  toggleCreateProjectModal(true);
-                },
+                onClick: () => toggleCreateProjectModal(true),
               }}
               comicBox={{
                 title: "Everything starts with a project in Plane",
@@ -98,7 +93,7 @@ export const WorkspaceDashboardView = observer(() => {
           )}
         </>
       ) : (
-        <div className="grid h-full w-full place-items-center">
+        <div className="h-full w-full grid place-items-center">
           <Spinner />
         </div>
       )}

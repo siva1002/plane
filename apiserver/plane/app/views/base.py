@@ -1,5 +1,5 @@
 # Python imports
-import zoneinfo
+from backports import zoneinfo
 import json
 
 # Django imports
@@ -64,7 +64,6 @@ class WebhookMixin:
                 action=self.request.method,
                 slug=self.workspace_slug,
                 bulk=self.bulk,
-                current_site=request.META.get("HTTP_ORIGIN"),
             )
 
         return response
@@ -208,41 +207,41 @@ class BaseAPIView(TimezoneMixin, APIView, BasePaginator):
         Handle any exception that occurs, by returning an appropriate response,
         or re-raising the error.
         """
-        try:
-            response = super().handle_exception(exc)
-            return response
-        except Exception as e:
-            if isinstance(e, IntegrityError):
-                return Response(
-                    {"error": "The payload is not valid"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+        # try:
+        response = super().handle_exception(exc)
+        return response
+        # except Exception as e:
+        #     if isinstance(e, IntegrityError):
+        #         return Response(
+        #             {"error": "The payload is not valid"},
+        #             status=status.HTTP_400_BAD_REQUEST,
+        #         )
 
-            if isinstance(e, ValidationError):
-                return Response(
-                    {"error": "Please provide valid detail"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+        #     if isinstance(e, ValidationError):
+        #         return Response(
+        #             {"error": "Please provide valid detail"},
+        #             status=status.HTTP_400_BAD_REQUEST,
+        #         )
 
-            if isinstance(e, ObjectDoesNotExist):
-                return Response(
-                    {"error": f"The required object does not exist."},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
+        #     if isinstance(e, ObjectDoesNotExist):
+        #         return Response(
+        #             {"error": f"The required object does not exist."},
+        #             status=status.HTTP_404_NOT_FOUND,
+        #         )
 
-            if isinstance(e, KeyError):
-                return Response(
-                    {"error": f"The required key does not exist."},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+        #     if isinstance(e, KeyError):
+        #         return Response(
+        #             {"error": f"The required key does not exist."},
+        #             status=status.HTTP_400_BAD_REQUEST,
+        #         )
 
-            if settings.DEBUG:
-                print(e)
-            capture_exception(e)
-            return Response(
-                {"error": "Something went wrong please try again later"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+        #     if settings.DEBUG:
+        #         print(e)
+        #     capture_exception(e)
+        #     return Response(
+        #         {"error": "Something went wrong please try again later"},
+        #         status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        #     )
 
     def dispatch(self, request, *args, **kwargs):
         try:

@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 // hooks
-import { useIssueDetail, useKanbanView, useLabel, useMember, useProject, useProjectState } from "hooks/store";
+import { useKanbanView, useLabel, useMember, useProject, useProjectState } from "hooks/store";
 // components
 import { HeaderGroupByCard } from "./headers/group-by-card";
 import { KanbanGroup } from "./kanban-group";
@@ -73,7 +73,6 @@ const GroupByKanBan: React.FC<IGroupByKanBan> = observer((props) => {
   const project = useProject();
   const label = useLabel();
   const projectState = useProjectState();
-  const { peekIssue } = useIssueDetail();
 
   const list = getGroupByColumns(group_by as GroupByColumnTypes, project, label, projectState, member);
 
@@ -121,7 +120,6 @@ const GroupByKanBan: React.FC<IGroupByKanBan> = observer((props) => {
                   groupId={_list.id}
                   issuesMap={issuesMap}
                   issueIds={issueIds}
-                  peekIssueId={peekIssue?.issueId ?? ""}
                   displayProperties={displayProperties}
                   sub_group_by={sub_group_by}
                   group_by={group_by}

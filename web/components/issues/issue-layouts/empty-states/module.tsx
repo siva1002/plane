@@ -2,7 +2,7 @@ import { useState } from "react";
 import { observer } from "mobx-react-lite";
 import { PlusIcon } from "lucide-react";
 // hooks
-import { useApplication, useEventTracker, useIssues, useUser } from "hooks/store";
+import { useApplication, useIssueDetail, useIssues, useUser } from "hooks/store";
 import useToast from "hooks/use-toast";
 // components
 import { EmptyState } from "components/common";
@@ -29,11 +29,12 @@ export const ModuleEmptyState: React.FC<Props> = observer((props) => {
   const [moduleIssuesListModal, setModuleIssuesListModal] = useState(false);
   // store hooks
   const { issues } = useIssues(EIssuesStoreType.MODULE);
+  const { updateIssue, fetchIssue } = useIssueDetail();
 
   const {
     commandPalette: { toggleCreateIssueModal },
+    eventTracker: { setTrackElement },
   } = useApplication();
-  const { setTrackElement } = useEventTracker();
   const {
     membership: { currentProjectRole: userRole },
   } = useUser();
@@ -45,7 +46,11 @@ export const ModuleEmptyState: React.FC<Props> = observer((props) => {
 
     const issueIds = data.map((i) => i.id);
     await issues
-      .addIssuesToModule(workspaceSlug.toString(), projectId?.toString(), moduleId.toString(), issueIds)
+      .addIssueToModule(workspaceSlug.toString(), projectId?.toString(), moduleId.toString(), issueIds)
+      .then((res) => {
+        updateIssue(workspaceSlug, projectId, res.id, res);
+        fetchIssue(workspaceSlug, projectId, res.id);
+      })
       .catch(() =>
         setToastAlert({
           type: "error",
@@ -64,7 +69,7 @@ export const ModuleEmptyState: React.FC<Props> = observer((props) => {
         projectId={projectId}
         isOpen={moduleIssuesListModal}
         handleClose={() => setModuleIssuesListModal(false)}
-        searchParams={{ module: moduleId != undefined ? [moduleId.toString()] : [] }}
+        searchParams={{ module: true }}
         handleOnSubmit={handleAddIssuesToModule}
       />
       <div className="grid h-full w-full place-items-center">
@@ -76,7 +81,7 @@ export const ModuleEmptyState: React.FC<Props> = observer((props) => {
             text: "New issue",
             icon: <PlusIcon className="h-3 w-3" strokeWidth={2} />,
             onClick: () => {
-              setTrackElement("Module issue empty state");
+              setTrackElement("MODULE_EMPTY_STATE");
               toggleCreateIssueModal(true, EIssuesStoreType.MODULE);
             },
           }}
