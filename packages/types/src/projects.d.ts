@@ -17,12 +17,12 @@ export interface IProject {
   description: string;
   emoji: string | null;
   emoji_and_icon:
-    | string
-    | {
-        name: string;
-        color: string;
-      }
-    | null;
+  | string
+  | {
+    name: string;
+    color: string;
+  }
+  | null;
   estimate: string | null;
   icon_prop: {
     name: string;
@@ -52,6 +52,9 @@ export interface IProjectLite {
   id: string;
   name: string;
   identifier: string;
+}
+export interface IProjectSelect {
+  id: string | null;
 }
 
 type ProjectPreferences = {
