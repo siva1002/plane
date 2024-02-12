@@ -11,7 +11,7 @@ import { AppLayout } from "layouts/app-layout";
 // components
 import { WorkspaceTimesheetHeader } from "components/headers";
 import { EmptyState, getEmptyStateImagePath } from "components/empty-state";
-import { Timesheet } from "components/workspace/timesheet/timesheet";
+import { Timesheet } from "components/issues/timesheet/timesheet";
 // constants
 import { EUserWorkspaceRoles } from "constants/workspace";
 // type

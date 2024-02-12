@@ -10,6 +10,7 @@ import type {
   Properties,
   IIssueDisplayFilterOptions,
   TIssue,
+  TIssueTimesheet
 } from "@plane/types";
 
 export interface IIssueCycle {
@@ -220,4 +221,10 @@ export interface IGroupByColumn {
 
 export interface IIssueMap {
   [key: string]: TIssue;
+}
+
+export interface TIssueTimesheet{
+  duration:number,
+  issueid:string,
+  description:string
 }
