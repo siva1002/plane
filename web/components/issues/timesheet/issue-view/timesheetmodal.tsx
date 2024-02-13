@@ -7,15 +7,21 @@ import { Button, Input } from "@plane/ui";
 import useToast from "hooks/use-toast";
 // types
 import { useIssues } from "hooks/store/use-issues";
-import { TIssue } from "@plane/types";
-import { useProject } from "hooks/store";
+import { timeSheetservice } from "services/issue";
+import { useProject, useWorkspace } from "hooks/store";
 import { TIssueTimesheet } from "@plane/types";
 
+type Record = {
+  workspaceslug: any,
+  issue_name:any,
+  project_id: any,
+  id: any
+}
 
 type Props = {
   isOpen: boolean;
   handleClose: () => void;
-  data?: TIssue;
+  data?: Record;
   onSubmit?: () => Promise<void>;
 };
 type TTimesheetFormValues = {
@@ -24,7 +30,9 @@ type TTimesheetFormValues = {
 };
 export const IssueTimeSheetModal: React.FC<Props> = (props) => {
   const { data, isOpen, handleClose } = props;
+  console.log(data)
   const [isCreateLoading, setIsCreateLoading] = useState(false);
+  const service = new timeSheetservice()
   const {
     control,
     formState: { errors, isSubmitting, isValid },
@@ -42,6 +50,8 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
   const { setToastAlert } = useToast();
   // hooks
   const { getProjectById } = useProject();
+  const { currentWorkspace } = useWorkspace();
+  const {}=useIssues()
 
   useEffect(() => {
     setIsCreateLoading(false);
@@ -49,23 +59,20 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
   useEffect(() => {
     setFocus("workedhours");
   }, [setFocus]);
-  // // if (!dataId && !data) return null;
-
-  // const issue = data ? data : issueMap[dataId!];
-
   const onClose = () => {
     setIsCreateLoading(false);
     handleClose();
   };
-  const handleFormSubmit = async (data: TTimesheetFormValues) => {
-
-    console.log(data); // Here you can handle the form data
+  const handleFormSubmit = async (recorddata: TTimesheetFormValues) => {
+    // Here you can handle the form data
     const payload: TIssueTimesheet = {
-      duration: data.workedhours,
-      description: data.description,
-      issueid: ''
+      duration: recorddata.workedhours,
+      description: recorddata.description,
+      project: data?.project_id,
+      workspace: currentWorkspace?.id
     };
-
+    const response = service.createTimerecord(data?.workspaceslug, data?.project_id, data?.id, payload)
+    response.then(response => { console.log(response) })
     onClose();
   };
   return (
@@ -98,7 +105,9 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
                 <div className="flex flex-col gap-6 p-6">
                   <div className="flex w-full items-center justify-start gap-6">
                     <span className="flex items-center justify-start">
-                      <h3 className="text-xl font-medium 2xl:text-2xl">Update timesheet</h3>
+                      <h3 className="text-xl font-medium 2xl:text-2xl"><span className="break-words font-medium text-custom-text-100">
+                        {`${getProjectById(data?.project_id)?.name}-${data?.issue_name}`}
+                      </span></h3>
                     </span>
                   </div>
                   <form onSubmit={handleSubmit(handleFormSubmit)}>

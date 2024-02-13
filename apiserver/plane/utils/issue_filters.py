@@ -258,6 +258,7 @@ def filter_name(params, filter, method):
 def filter_created_at(params, filter, method):
     if method == "GET":
         created_ats = params.get("created_at").split(",")
+        print(len(created_ats) and ("" not in created_ats))
         if len(created_ats) and "" not in created_ats:
             date_filter(
                 filter=filter,
@@ -495,6 +496,7 @@ def issue_filters(query_params, method):
         "subscriber": filter_subscribed_issues,
         "start_target_date": filter_start_target_date_issues,
     }
+
 
     for key, value in ISSUE_FILTER.items():
         if key in query_params:

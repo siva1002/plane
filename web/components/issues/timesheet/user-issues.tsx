@@ -9,7 +9,6 @@ import useSWR from 'swr'
 import { WeeklyCalendar } from "./calendar/weekly";
 import { LayersIcon } from "lucide-react";
 import { useState } from "react";
-import { tree } from "next/dist/build/templates/app-page";
 
 interface IProfileIssuesPage {
     type: "assigned" | "subscribed" | "created";
@@ -21,6 +20,7 @@ export const AllIssues = observer((props: IProfileIssuesPage) => {
     const { workspaceSlug } = route.query as { workspaceSlug: string }
     const { issues } = useIssues(EIssuesStoreType.PROFILE);
     const { currentUser } = useUser()
+    const [issudetail, setIssue] = useState({id:'',project_id:'',workspaceslug:workspaceSlug,issue_name:''})
     const { data, isLoading } = useSWR(
         workspaceSlug && currentUser?.id ? `CURRENT_WORKSPACE_PROFILE_ISSUES_${workspaceSlug}_${currentUser?.id}_${type}` : null,
         async () => {
@@ -31,10 +31,11 @@ export const AllIssues = observer((props: IProfileIssuesPage) => {
     );
     const [showModal, setShowModal] = useState(false);
 
-  const handleClick = () => {
-    console.log(showModal)
-    setShowModal(true);
-  };
+    const handleClick = (project_id: string, issueid: string,issuename:string) => {
+        setIssue({ "project_id": project_id, "id": issueid,"workspaceslug":workspaceSlug,issue_name:issuename })
+
+        setShowModal(true);
+    };
 
     return <>
         {!isLoading && data?.length && <div>
@@ -49,7 +50,8 @@ export const AllIssues = observer((props: IProfileIssuesPage) => {
                         </th>
                     </thead>
                     {data.map(issueDetail =>
-                        <td className="sticky group left-0 h-11  w-[26rem] flex items-center bg-custom-background-100 text-sm after:absolute after:w-full after:bottom-[-1px] after:border after:border-l-0 after:border-custom-border-100 before:absolute before:h-full before:right-0 before:border before:border-l-0 before:border-custom-border-100" onClick={handleClick}>
+                        <td className="sticky group left-0 h-11  w-[26rem] flex items-center bg-custom-background-100 text-sm after:absolute after:w-full after:bottom-[-1px] after:border after:border-l-0 after:border-custom-border-100 before:absolute before:h-full before:right-0 before:border before:border-l-0 before:border-custom-border-100"
+                            onClick={() => handleClick(issueDetail.project_id, issueDetail.id,issueDetail.name)}>
                             <Tooltip tooltipHeading="Title" tooltipContent={issueDetail.name}>
                                 <div className="h-full w-full cursor-pointer truncate px-4 py-2.5 text-left text-[0.825rem] text-custom-text-100">
                                     {issueDetail.name}
@@ -57,11 +59,10 @@ export const AllIssues = observer((props: IProfileIssuesPage) => {
                             </Tooltip>
                         </td >
                     )}
-                     
                 </table>
-                {showModal && <IssueTimeSheetModal handleClose={()=>setShowModal(false) } isOpen={showModal} key={"uiuwuryweuruwerwerw232423423423"}/>}
-                <WeeklyCalendar />
-               
+                {showModal && <IssueTimeSheetModal handleClose={() => setShowModal(false)} isOpen={showModal} data={issudetail} key={""} />}
+                <WeeklyCalendar data={data.map(issues=>issues.id)} />
+
             </div>
 
         </div>}

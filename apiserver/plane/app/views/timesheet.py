@@ -10,6 +10,7 @@ from ..serializers import TimeSheetSerializer
 from plane.utils.issue_filters import issue_filters
 from ..permissions.timesheet import (TimesheetLitePermission)
 from ..permissions.project import (ProjectEntityPermission)
+from plane.utils.timesheet_filter import timesheet_filter
 
 
 
@@ -19,18 +20,22 @@ Admin=20
 Member=15
 viewer=10
 guest=5
+timesheet_filter_fields=['created_at', 'updated_at']
 class TimesheetView(BaseViewSet):
     model=TimeSheet
     
     permission_classes=[
         TimesheetLitePermission
         ]
+    
     filterset_fields = [
        "assignees",
+       "created_at"
     ]
-    serializer_class=TimeSheetSerializer
 
     
+    serializer_class=TimeSheetSerializer
+
     def is_projectadmin(self):
         project=self.kwargs.get('project_id')
         is_admin=ProjectMember.objects.filter(member__in=[self.request.user],project=project,role__in=[Admin]).exists()
@@ -44,17 +49,13 @@ class TimesheetView(BaseViewSet):
 
     def get(self,*args,**kwargs):
         issue_timesheet_queryset=self.get_queryset()
-        issuefilter=issue_filters(
-                           self.request.query_params, 
-                           "GET")
-        if (issuefilter 
-            and 
-            self.
-            is_projectadmin()
-           ):
-            manipulated_filter = {key.replace(key, f"issue__{key}"): issuefilter.get(key) 
-                                  for key in issuefilter}
-            issue_timesheet_queryset=issue_timesheet_queryset.filter(**manipulated_filter)
+        
+        issuefilter=timesheet_filter(
+                    self.request.query_params, 
+                    "GET")
+        if (issuefilter):
+            issue_timesheet_queryset=issue_timesheet_queryset.filter(**issuefilter).order_by("created_at")
+
         issue_timesheet=TimeSheetSerializer(
                                 issue_timesheet_queryset,
                                 many=True)
@@ -75,7 +76,7 @@ class TimeSheetCreateView(BaseAPIView):
         if timesheet.is_valid():
             timesheet.save()
             return Response(data={"data":timesheet.data,"message":"Record Created"},status=status.HTTP_201_CREATED)
-        return Response(data={"data":timesheet.errors},status=status.HTTP_204_NO_CONTENT)
+        return Response(data={"data":timesheet.errors},status=status.HTTP_206_PARTIAL_CONTENT)
         
 
 class ProjectTimesheet(BaseAPIView):

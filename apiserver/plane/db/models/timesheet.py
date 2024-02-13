@@ -11,6 +11,7 @@ class TimeSheet(ProjectBaseModel):
         on_delete=models.SET_NULL,
         null=True,
         related_name="issue_timesheet_activity")
+    created_at=models.DateField(auto_now_add=True)
     
     def __str__(self):
         return f"{self.actor}-{self.duration}"

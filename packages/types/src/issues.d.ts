@@ -10,7 +10,6 @@ import type {
   Properties,
   IIssueDisplayFilterOptions,
   TIssue,
-  TIssueTimesheet
 } from "@plane/types";
 
 export interface IIssueCycle {
@@ -224,7 +223,9 @@ export interface IIssueMap {
 }
 
 export interface TIssueTimesheet{
-  duration:number,
-  issueid:string,
-  description:string
+  duration:number;
+  project:string;
+  description:string;
+  workspace:string |undefined;
+
 }
