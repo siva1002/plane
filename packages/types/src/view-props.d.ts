@@ -148,6 +148,10 @@ export interface IWorkspaceGlobalViewDisplayFilterOptions {
   layout?: TIssueViewOptions;
 }
 
+export interface ITimesheetFilter{
+  created_at?:string
+}
+
 export interface IWorkspaceViewIssuesParams {
   assignees?: string | undefined;
   created_by?: string | undefined;

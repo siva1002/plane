@@ -13,9 +13,9 @@ import { TIssueTimesheet } from "@plane/types";
 
 type Record = {
   workspaceslug: any,
-  issue_name:any,
+  issue_name: any,
   project_id: any,
-  id: any
+  id: any,
 }
 
 type Props = {
@@ -51,7 +51,7 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
   // hooks
   const { getProjectById } = useProject();
   const { currentWorkspace } = useWorkspace();
-  const {}=useIssues()
+  const { } = useIssues()
 
   useEffect(() => {
     setIsCreateLoading(false);
@@ -66,10 +66,11 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
   const handleFormSubmit = async (recorddata: TTimesheetFormValues) => {
     // Here you can handle the form data
     const payload: TIssueTimesheet = {
-      duration: recorddata.workedhours,
+      workedhour: recorddata.workedhours,
       description: recorddata.description,
       project: data?.project_id,
-      workspace: currentWorkspace?.id
+      workspace: currentWorkspace?.id,
+      issue: data?.id
     };
     const response = service.createTimerecord(data?.workspaceslug, data?.project_id, data?.id, payload)
     response.then(response => { console.log(response) })

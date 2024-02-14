@@ -3,6 +3,8 @@ from datetime import datetime,timedelta
 
 def filter_by_date(daterange,filter,method):
     dates=daterange.split(',')
+    time=timezone.now().date()
+    print(time)
     if len(dates) ==2:
         filter['created_at__gte']=dates[0]
         filter['created_at__lte']=dates[1]

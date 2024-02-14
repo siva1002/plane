@@ -49,7 +49,7 @@ class TimesheetView(BaseViewSet):
 
     def get(self,*args,**kwargs):
         issue_timesheet_queryset=self.get_queryset()
-        
+        print(self.request.query_params)
         issuefilter=timesheet_filter(
                     self.request.query_params, 
                     "GET")

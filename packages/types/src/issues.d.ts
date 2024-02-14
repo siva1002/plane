@@ -187,8 +187,8 @@ export interface IIssueViewProps {
   mutateIssues: KeyedMutator<
     | TIssue[]
     | {
-        [key: string]: TIssue[];
-      }
+      [key: string]: TIssue[];
+    }
   >;
   params: any;
   properties: Properties;
@@ -222,10 +222,25 @@ export interface IIssueMap {
   [key: string]: TIssue;
 }
 
-export interface TIssueTimesheet{
-  duration:number;
-  project:string;
-  description:string;
-  workspace:string |undefined;
+export interface TIssueTimesheet {
+  workedhour: number;
+  project: string;
+  description: string;
+  workspace: string | undefined;
+  issue: string
 
+}
+
+export interface TIssueTimesheetRecord {
+  actor: string
+  created_at: string
+  created_by: string
+  description: string
+  id: string
+  issue: string
+  project: string
+  updated_at: string
+  updated_by: string
+  workedhour: number
+  workspace: string
 }

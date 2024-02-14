@@ -1,5 +1,6 @@
 import { API_BASE_URL } from "helpers/common.helper";
 import { APIService } from "services/api.service";
+import { ITimesheetFilter } from "@plane/types";
 
 export class timeSheetservice extends APIService {
     constructor() {
@@ -22,8 +23,9 @@ export class timeSheetservice extends APIService {
     async getTimesheet(
         issueId: string,
         workspaceSlug: string,
-        projectId: string,): Promise<any> {
-        return this.get(`/api/workspaces/${workspaceSlug}/timesheet/${projectId}/issue/${issueId}`)
+        projectId: string,
+        created_at:string): Promise<any> {
+        return this.get(`/api/workspaces/${workspaceSlug}/timesheet/${projectId}/issue/${issueId}`,{params: {created_at: created_at}})
             .then((response) => response?.data)
             .catch((error) => {
                 console.log(error)
@@ -33,9 +35,8 @@ export class timeSheetservice extends APIService {
     async filterTimesheet(
         issueId: string,
         workspaceSlug: string,
-        startdate:string,
-        enddate:string,
-        projectId: string,): Promise<any> {
+        projectId: string,
+        ): Promise<any> {
         return this.get(`/api/workspaces/${workspaceSlug}/timesheet/${projectId}/issue/${issueId}`)
             .then((response) => response?.data)
             .catch((error) => {
