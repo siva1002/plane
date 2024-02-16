@@ -2,8 +2,7 @@
 from django.db.models import (Q)
 
 #In House imports
-from plane.db.models import (ProjectMember,
-                             IssueAssignee)
+from plane.db.models import (ProjectMember,WorkspaceMember)
 
 #Third party imports
 from rest_framework.permissions import BasePermission,SAFE_METHODS
@@ -29,5 +28,10 @@ class TimesheetLitePermission(BasePermission):
 
             return issue_permission
         
-        if request.method in ['POST','UPDATE','PUT']:
-            return True
+        if request.method in ['POST']:
+            WorkspaceMember.objects.filter(
+                workspace__slug=view.workspace_slug,
+                member=request.user,
+                role__in=[Admin, Member],
+                is_active=True,
+            ).exists()

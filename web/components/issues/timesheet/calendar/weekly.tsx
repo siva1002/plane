@@ -36,11 +36,10 @@ export const WeeklyCalendar: FC<Props> = observer((props) => {
     return <>
         {!isLoading && filteredata.map(d => 
 
-            <td className="h-full cursor-pointer truncate px-4 py-2.5 text-left text-[0.825rem] text-custom-text-100" aria-disabled={true}>
+            <td className="h-full cursor-pointer truncate text-left text-[0.825rem] text-custom-text-100" aria-disabled={true}>
                 <span>
                     <div className="bg-custom-background-90 w-[10rem] flex-row justify-center">
                         <DayRecord data={d} />
-                        {/* <p>{data.filter(item => item.created_at.includes(d))}</p> */}
                     </div>
                 </span>
             </td>
