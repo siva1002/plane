@@ -30,6 +30,4 @@ class TimesheetLitePermission(BasePermission):
             return issue_permission
         
         if request.method in ['POST','UPDATE','PUT']:
-            issue=view.kwargs.get('pk')
-            issueassignee=IssueAssignee.objects.filter(assignee=request.user,issue=issue).exists()
-            return issueassignee
+            return True

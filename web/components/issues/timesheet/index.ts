@@ -1,2 +1,2 @@
-export * from './select-project/select-project'
+export * from './select/select-project'
 export * from './issue-view/timesheetmodal'

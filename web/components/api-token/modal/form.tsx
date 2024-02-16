@@ -151,7 +151,7 @@ export const CreateApiTokenForm: React.FC<Props> = (props) => {
                 onChange={onChange}
                 hasError={Boolean(errors.description)}
                 placeholder="Token description"
-                className="h-24 w-full text-sm"
+                className="h-28 w-full text-sm"
               />
             )}
           />

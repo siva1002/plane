@@ -1,58 +1,67 @@
 import { useEffect, useState, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useForm, Controller } from 'react-hook-form';
+import { useRouter } from "next/router";
+import { LayoutPanelTop } from "lucide-react";
+import { ParentIssuesListModal } from "components/issues/parent-issues-list-modal";
+
 // ui
-import { Button, Input } from "@plane/ui";
+import { Button, Input, CustomMenu,TextArea } from "@plane/ui";
 // hooks
 import useToast from "hooks/use-toast";
 // types
-import { useIssues } from "hooks/store/use-issues";
 import { timeSheetservice } from "services/issue";
 import { useProject, useWorkspace } from "hooks/store";
-import { TIssueTimesheet } from "@plane/types";
+import { ISearchIssueResponse } from "@plane/types";
+import { TIssue } from "@plane/types";
+import { TimeSelectProject } from "../select/select-project";
 
-type Record = {
-  workspaceslug: any,
-  issue_name: any,
-  project_id: any,
-  id: any,
-}
+
 
 type Props = {
   isOpen: boolean;
+  userissues: TIssue[];
   handleClose: () => void;
-  data?: Record;
   onSubmit?: () => Promise<void>;
 };
 type TTimesheetFormValues = {
   workedhours: number;
   description: string;
+  issue: string
+  project_id: string
 };
 export const IssueTimeSheetModal: React.FC<Props> = (props) => {
-  const { data, isOpen, handleClose } = props;
-  console.log(data)
+  const { isOpen, handleClose, userissues } = props;
+  const route = useRouter()
   const [isCreateLoading, setIsCreateLoading] = useState(false);
+  const { workspaceSlug } = route.query as { workspaceSlug: string }
   const service = new timeSheetservice()
+  const { currentWorkspace } = useWorkspace()
+  const { workspaceProjectIds: workspaceProjectIds } = useProject();
+
   const {
     control,
     formState: { errors, isSubmitting, isValid },
     handleSubmit,
     setFocus,
+    watch
   } = useForm<TTimesheetFormValues>({
     defaultValues: {
       workedhours: 0,
-      description: ""
+      description: "",
+      issue: "",
+      project_id: ""
     },
     mode: "onChange",
     reValidateMode: "onChange",
   });
 
   const { setToastAlert } = useToast();
+  const [IssueListModalOpen, ListModalOpen] = useState(false)
   // hooks
-  const { getProjectById } = useProject();
-  const { currentWorkspace } = useWorkspace();
-  const { } = useIssues()
-
+  const [selectedParentIssue, setSelectedParentIssue] = useState<ISearchIssueResponse | null>(null);
+  const projectId = watch("project_id")
+  console.log(projectId, 'selectedParentIssue')
   useEffect(() => {
     setIsCreateLoading(false);
   }, [isOpen]);
@@ -64,18 +73,24 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
     handleClose();
   };
   const handleFormSubmit = async (recorddata: TTimesheetFormValues) => {
-    // Here you can handle the form data
-    const payload: TIssueTimesheet = {
+    const payload = {
       workedhour: recorddata.workedhours,
       description: recorddata.description,
-      project: data?.project_id,
       workspace: currentWorkspace?.id,
-      issue: data?.id
-    };
-    const response = service.createTimerecord(data?.workspaceslug, data?.project_id, data?.id, payload)
-    response.then(response => { console.log(response) })
+      project: recorddata.project_id,
+      issue: recorddata.issue
+    }
+    const response = await service.createTimerecord(workspaceSlug, recorddata.project_id, recorddata.issue, payload)
     onClose();
   };
+  const onChange = (formData: Partial<TIssue>) => {
+
+    console.log(formData)
+  }
+  const handleFormChange = () => {
+    if (!onChange) return;
+    if ((watch("issue") || watch("project_id"))) onChange(watch());
+  }
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-20" onClose={onClose}>
@@ -91,8 +106,8 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
           <div className="fixed inset-0 bg-custom-backdrop transition-opacity" />
         </Transition.Child>
 
-        <div className="fixed inset-0 z-10 overflow-y-auto">
-          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+        <div className="fixed  inset-0 z-10 overflow-y-auto my-[18rem]">
+          <div className="flex items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -102,17 +117,17 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-custom-background-100 text-left shadow-custom-shadow-md transition-all sm:my-8 sm:w-full sm:max-w-2xl">
+              <Dialog.Panel className="relative transform rounded-lg border border-custom-border-200 bg-custom-background-100 text-left shadow-custom-shadow-md transition-all sm:w-full mx-4 sm:max-w-4xl">
                 <div className="flex flex-col gap-6 p-6">
                   <div className="flex w-full items-center justify-start gap-6">
                     <span className="flex items-center justify-start">
                       <h3 className="text-xl font-medium 2xl:text-2xl"><span className="break-words font-medium text-custom-text-100">
-                        {`${getProjectById(data?.project_id)?.name}-${data?.issue_name}`}
+                        {!isSubmitting ? "Timesheet" : "Submiting"}
                       </span></h3>
                     </span>
                   </div>
-                  <form onSubmit={handleSubmit(handleFormSubmit)}>
-                    <div>
+                  <form onSubmit={handleSubmit(handleFormSubmit)} className="flex-row">
+                    <div className="mb-5">
                       <Controller
                         control={control}
                         name="workedhours"
@@ -127,21 +142,86 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
                         )}
                       />
                     </div>
+
                     <div>
                       <Controller
                         control={control}
                         name="description"
                         render={({ field: { value, onChange } }) => (
-                          <Input
-                            type="text"
+                          <TextArea
                             value={value}
                             onChange={onChange}
+                            hasError={Boolean(errors.description)}
                             placeholder="Description"
-                            className="w-full text-sm font-medium"
+                            className="h-24 w-full resize-none text-sm"
                           />
                         )}
                       />
                     </div>
+                    <div className="flex my-5 gap-5">
+                      <div>
+                        {<Controller
+                          name="project_id"
+                          control={control}
+                          render={({ field: { value, onChange } }) => (
+                            <TimeSelectProject
+                              value={value ?? undefined}
+                              onChange={onChange}
+                              projects={workspaceProjectIds ?? undefined}
+                            />
+                          )}
+                        />}
+                      </div>
+                      <CustomMenu
+                        customButton={
+                          <button
+                            type="button"
+                            className="flex items-center justify-between gap-1 w-full cursor-pointer rounded border-[0.5px] border-custom-border-300 text-custom-text-200 px-2 py-1 text-xs hover:bg-custom-background-80"
+                          >
+                            {watch("issue") ? (
+                              <div className="flex items-center gap-1 text-custom-text-200">
+                                <LayoutPanelTop className="h-3 w-3 flex-shrink-0" />
+                                <span className="whitespace-nowrap">
+                                  {selectedParentIssue &&
+                                    `${selectedParentIssue.project__identifier}-
+                                  ${selectedParentIssue.sequence_id}`}
+                                </span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1 text-custom-text-300">
+                                <LayoutPanelTop className="h-3 w-3 flex-shrink-0" />
+                                <span className="whitespace-nowrap">Issue</span>
+                              </div>
+                            )}
+                          </button>
+                        }
+                        placement="bottom-start"
+                        tabIndex={15}
+                      >
+
+                        <CustomMenu.MenuItem className="!p-1" onClick={() => ListModalOpen(true)}>
+                          Select Issue
+                        </CustomMenu.MenuItem>
+
+                      </CustomMenu>
+                      <Controller
+                        control={control}
+                        name="issue"
+                        render={({ field: { onChange } }) => (
+                          <ParentIssuesListModal
+                            isOpen={IssueListModalOpen}
+                            handleClose={() => ListModalOpen(false)}
+                            onChange={(issue) => {
+                              onChange(issue.id);
+                              handleFormChange();
+                              setSelectedParentIssue(issue);
+                            }}
+                            projectId={projectId}
+                          />
+                        )}
+                      />
+                    </div>
+
 
                     <div className="flex justify-end gap-2">
                       <Button variant="neutral-primary" size="sm" type="submit" >

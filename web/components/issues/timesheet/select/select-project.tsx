@@ -1,5 +1,4 @@
 import { CustomSelect } from "@plane/ui";
-import { IProject,IProjectLite } from "@plane/types";
 import { useProject } from "hooks/store";import { get } from "lodash";
 
 type Props={
@@ -8,18 +7,18 @@ type Props={
   projects:string[] | undefined
 }
 
-export const SelectProject: React.FC<Props> = (props) => {
+export const TimeSelectProject: React.FC<Props> = (props) => {
     const { value, onChange,projects } = props;
     const {getProjectById}=useProject()
     return (
-        <CustomSelect
+        <CustomSelect className=""
           value={value}
           label={value && value.length > 0
             ? projects
                 ?.filter((p) => value.includes(p))
                 .map((p) => getProjectById(p)?.name)
                 .join("")
-            : "All projects"}
+            : "Project"}
           onChange={onChange}
           maxHeight="lg"
         >

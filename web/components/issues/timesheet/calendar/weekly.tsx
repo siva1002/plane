@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import moment, { weekdays } from "moment";
+import moment from "moment";
 import { FC } from "react";
 import { timeSheetservice } from "services/issue";
 import { TIssue } from "@plane/types";
