@@ -12,9 +12,12 @@ class TimeSheet(ProjectBaseModel):
         null=True,
         related_name="issue_timesheet_activity")
     description=models.CharField(max_length=100,blank=True,default='No message')
+
+    def save(self, *args, **kwargs):
+        return super().save(*args, **kwargs)
     
     
     
     def __str__(self):
-        return f"{self.actor}-{self.duration}"
+        return f"{self.actor}-{self.workedhour}-{self.description}"
     

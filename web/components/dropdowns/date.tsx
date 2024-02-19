@@ -248,6 +248,7 @@ export const DateDropdown: React.FC<Props> = (props) => {
             buttonContainerClassName
           )}
           onClick={openDropdown}
+          disabled={disabled}
         >
           {buttonVariant === "border-with-text" ? (
             <BorderButton

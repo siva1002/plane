@@ -19,6 +19,13 @@ class TimeAuditModel(models.Model):
 
     class Meta:
         abstract = True
+    
+    def save(self, *args, **kwargs):
+        created=kwargs.get('created_at', None)
+        print(created,kwargs)
+        if created:
+            self.created_at=created
+        return super().save(*args, **kwargs)
 
 
 class UserAuditModel(models.Model):

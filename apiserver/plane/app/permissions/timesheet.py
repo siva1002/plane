@@ -27,11 +27,12 @@ class TimesheetLitePermission(BasePermission):
             ).exists()
 
             return issue_permission
-        
-        if request.method in ['POST']:
-            WorkspaceMember.objects.filter(
+        if request.method in ["POST"]:
+            per=WorkspaceMember.objects.filter(
                 workspace__slug=view.workspace_slug,
                 member=request.user,
                 role__in=[Admin, Member],
                 is_active=True,
             ).exists()
+            print(per)
+            return per

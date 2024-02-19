@@ -1,7 +1,8 @@
 import React from "react";
 import { useRouter } from "next/router";
 import { observer } from "mobx-react-lite";
-import { useIssues, useUser,useProject } from "hooks/store";
+import { useIssues, useUser,useProject} from "hooks/store";
+import { useTheme } from "next-themes";
 import { EIssuesStoreType } from "constants/issue";
 import { IssueTimeSheetModal } from "./issue-view/timesheetmodal";
 import { Tooltip } from "@plane/ui";
@@ -10,6 +11,8 @@ import { WeeklyCalendar } from "./calendar/weekly";
 import { LayersIcon } from "lucide-react";
 import { useState } from "react";
 import moment from "moment";
+import { EmptyState, getEmptyStateImagePath } from "components/empty-state";
+
 
 
 interface IProfileIssuesPage {
@@ -22,6 +25,8 @@ export const AllIssues = observer((props: IProfileIssuesPage) => {
     const { workspaceSlug } = route.query as { workspaceSlug: string }
     const { issues } = useIssues(EIssuesStoreType.PROFILE);
     const { currentUser } = useUser()
+    const { resolvedTheme } = useTheme();
+
     const {getProjectById}=useProject()
     const { data, isLoading } = useSWR(
         workspaceSlug && currentUser?.id ? `CURRENT_WORKSPACE_PROFILE_ISSUES_${workspaceSlug}_${currentUser?.id}_${type}` : null,
@@ -32,15 +37,19 @@ export const AllIssues = observer((props: IProfileIssuesPage) => {
         }
     );
     const [showModal, setShowModal] = useState(false);
-
-    const handleClick = (day:string) => {
+    const [pickedDate,setDate]=useState(moment().date())
+    const isLightMode = resolvedTheme ? resolvedTheme === "light" : currentUser?.theme.theme === "light";
+    const emptyStateImage = getEmptyStateImagePath("all-issues", "custom-view", isLightMode);
+    const handleClick = (day:Date) => {
         // setIssue({ "project_id": project_id, "id": issueid, "workspaceslug": workspaceSlug, issue_name: issuename })
 
         setShowModal(true);
+        setDate(day)
     };
 
     const handleClose = () => {
         setShowModal(false)
+        setDate(Date.now())
     }
     var currentDate = moment();
     var weekStart = currentDate.clone().startOf('week');
@@ -48,10 +57,10 @@ export const AllIssues = observer((props: IProfileIssuesPage) => {
     var days = [];
 
     for (var i = 0; i <= 6; i++) {
-        days.push(moment(weekStart).add(i, 'days').format("MMMM Do,dddd"));
+        days.push(moment(weekStart).add(i, 'days'));
     }
     return <>
-        {!isLoading && data?.length && <div>
+        {!isLoading && data?.length ? <div>
             <div className="group relative flex border-b border-custom-border-200">
                 <table className="divide-x-[0.5px] divide-custom-border-200 overflow-y-auto">
                     <thead className="sticky top-0 left-0 z-[1] border-b-[0.5px] border-custom-border-100">
@@ -65,7 +74,7 @@ export const AllIssues = observer((props: IProfileIssuesPage) => {
                             <th className="sticky left-0 z-[1] h-11 w-[26rem] items-center bg-custom-background-90 text-sm font-medium before:absolute before:h-full before:right-0 before:border-[0.5px]  before:border-custom-border-100">
                                 <span className="flex h-full w-full flex-grow items-center justify-center px-4 py-2.5"
                                 onClick={() => handleClick(day)}>
-                                    {day}
+                                    {day.format("MMMM Do,dddd")}
                                 </span>
                             </th>
                         )}
@@ -84,16 +93,16 @@ export const AllIssues = observer((props: IProfileIssuesPage) => {
                             <WeeklyCalendar issueObj={issueDetail} />
                         </tr>
                     )}
-
-
-
-
                 </table>
-                {showModal && <IssueTimeSheetModal handleClose={() => handleClose()} isOpen={showModal} key={""} userissues={data} />}
+                {showModal && <IssueTimeSheetModal handleClose={() => handleClose()} isOpen={showModal} key={""} pickedDay={pickedDate} />}
 
             </div>
 
-        </div>}
+        </div> :<EmptyState
+              image={emptyStateImage}
+            title="No Issue to create timesheet"
+              size="sm"
+            />}
     </>
 })
 

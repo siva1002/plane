@@ -7,6 +7,7 @@ import { ParentIssuesListModal } from "components/issues/parent-issues-list-moda
 
 // ui
 import { Button, Input, CustomMenu,TextArea } from "@plane/ui";
+import { DateDropdown } from "components/dropdowns";
 // hooks
 import useToast from "hooks/use-toast";
 // types
@@ -16,11 +17,16 @@ import { ISearchIssueResponse } from "@plane/types";
 import { TIssue } from "@plane/types";
 import { TimeSelectProject } from "../select/select-project";
 
+//helpers
+import { renderFormattedPayloadDate } from "helpers/date-time.helper";
+import moment from "moment";
+
+
 
 
 type Props = {
   isOpen: boolean;
-  userissues: TIssue[];
+  pickedDay:Date;
   handleClose: () => void;
   onSubmit?: () => Promise<void>;
 };
@@ -29,9 +35,10 @@ type TTimesheetFormValues = {
   description: string;
   issue: string
   project_id: string
+  created_at: string 
 };
 export const IssueTimeSheetModal: React.FC<Props> = (props) => {
-  const { isOpen, handleClose, userissues } = props;
+  const { isOpen, handleClose,pickedDay} = props;
   const route = useRouter()
   const [isCreateLoading, setIsCreateLoading] = useState(false);
   const { workspaceSlug } = route.query as { workspaceSlug: string }
@@ -50,7 +57,8 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
       workedhours: 0,
       description: "",
       issue: "",
-      project_id: ""
+      project_id: "",
+      created_at:moment(pickedDay).format("YYYY-MM-DD")
     },
     mode: "onChange",
     reValidateMode: "onChange",
@@ -61,7 +69,6 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
   // hooks
   const [selectedParentIssue, setSelectedParentIssue] = useState<ISearchIssueResponse | null>(null);
   const projectId = watch("project_id")
-  console.log(projectId, 'selectedParentIssue')
   useEffect(() => {
     setIsCreateLoading(false);
   }, [isOpen]);
@@ -78,7 +85,8 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
       description: recorddata.description,
       workspace: currentWorkspace?.id,
       project: recorddata.project_id,
-      issue: recorddata.issue
+      issue: recorddata.issue,
+      created_at: recorddata.created_at
     }
     const response = await service.createTimerecord(workspaceSlug, recorddata.project_id, recorddata.issue, payload)
     onClose();
@@ -91,6 +99,7 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
     if (!onChange) return;
     if ((watch("issue") || watch("project_id"))) onChange(watch());
   }
+  console.log(moment(pickedDay).format("MMMM Do,dddd"))
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-20" onClose={onClose}>
@@ -106,7 +115,7 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
           <div className="fixed inset-0 bg-custom-backdrop transition-opacity" />
         </Transition.Child>
 
-        <div className="fixed  inset-0 z-10 overflow-y-auto my-[18rem]">
+        <div className="fixed  inset-0 z-10 overflow-y-auto my-[10rem]">
           <div className="flex items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <Transition.Child
               as={Fragment}
@@ -128,6 +137,25 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
                   </div>
                   <form onSubmit={handleSubmit(handleFormSubmit)} className="flex-row">
                     <div className="mb-5">
+                    <Controller
+                  control={control}
+                  name="created_at"
+                  render={({ field: { value, onChange } }) => (
+                    <div className="h-7">
+                      <DateDropdown
+                        value={value}
+                        onChange={(date) => {
+                          onChange(date ? renderFormattedPayloadDate(pickedDay) : null);
+                          handleFormChange();
+                        }}
+                        buttonVariant="border-with-text"
+                        // maxDate={moment(pickedDay).format('DD-MM-YYY') ?? undefined}
+                        tabIndex={10}
+                        disabled={true}
+                      />
+                    </div>
+                  )}
+                />
                       <Controller
                         control={control}
                         name="workedhours"

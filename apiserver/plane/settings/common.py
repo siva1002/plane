@@ -143,10 +143,11 @@ AUTH_USER_MODEL = "db.User"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "planelocal",
+        "NAME": "plane",
         "USER": "postgres",
         "PASSWORD": "root",
         "HOST": "localhost",
+        'PORT':"5433"
     }
 }
 
