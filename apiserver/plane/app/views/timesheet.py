@@ -1,13 +1,13 @@
 #Third party imports
 from rest_framework.response import Response
 from rest_framework import status
+from django.db.models import Sum
 
 #In house imports
 from .base import BaseViewSet
-from plane.db.models import (TimeSheet,ProjectMember)
+from plane.db.models import (TimeSheet,ProjectMember,Issue)
 from plane.app.views.base import BaseAPIView
 from ..serializers import TimeSheetSerializer
-from plane.utils.issue_filters import issue_filters
 from ..permissions.timesheet import (TimesheetLitePermission)
 from ..permissions.project import (ProjectEntityPermission)
 from plane.utils.timesheet_filter import timesheet_filter
@@ -41,7 +41,7 @@ class TimesheetView(BaseViewSet):
         is_admin=ProjectMember.objects.filter(member__in=[self.request.user],project=project,role__in=[Admin]).exists()
         return is_admin
 
-    
+
     def get_queryset(self):
         issue=self.kwargs.get('pk')
         issue_timesheet=super().get_queryset().select_related('actor','issue')
@@ -49,13 +49,12 @@ class TimesheetView(BaseViewSet):
 
     def get(self,*args,**kwargs):
         issue_timesheet_queryset=self.get_queryset()
-        print(self.request.query_params)
         issuefilter=timesheet_filter(
                     self.request.query_params, 
                     "GET")
         if (issuefilter):
             issue_timesheet_queryset=issue_timesheet_queryset.filter(**issuefilter).order_by("created_at")
-
+        
         issue_timesheet=TimeSheetSerializer(
                                 issue_timesheet_queryset,
                                 many=True)

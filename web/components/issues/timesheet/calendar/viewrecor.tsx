@@ -2,7 +2,6 @@ import { FC, useState, Fragment } from "react"
 import { observer } from "mobx-react"
 import { TIssueTimesheetRecord } from "@plane/types"
 import { Tooltip } from "@plane/ui";
-import { IssueRecord } from "../issue-view/recordmodal";
 import { Dialog, Transition } from "@headlessui/react";
 type Props = {
     data: [TIssueTimesheetRecord]
@@ -25,7 +24,7 @@ export const DayRecord: FC<Props> = observer((props) => {
     return <>{
         <div>
 
-            {data.length < 2 ? data.map(record =>
+            {data.length <2 ? data.map(record =>
                 <Tooltip tooltipHeading="Description" tooltipContent={record.description}>
                     <div className="h-full w-full cursor-pointer truncate px-4 py-2.5 text-left text-[0.825rem] text-custom-text-100">
                         {record.workedhour}
@@ -33,7 +32,7 @@ export const DayRecord: FC<Props> = observer((props) => {
                 </Tooltip>
 
 
-            ) : data.length >= 2 ? <div onClick={() => Showmodal(data)}>{data.length}</div>
+            ) : data.length >= 2 ? <div onClick={() => Showmodal(data)} >{data.length}</div>
                 : <p></p>
             }
             <div>

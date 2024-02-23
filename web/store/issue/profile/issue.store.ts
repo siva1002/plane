@@ -28,7 +28,7 @@ export interface IProfileIssues {
     projectId: string | undefined,
     loadType: TLoader,
     userId?: string | undefined,
-    view?: "assigned" | "created" | "subscribed"
+    view?: "assigned" | "created" | "subscribed" | "all-issues"
   ) => Promise<TIssue[]>;
   createIssue: (
     workspaceSlug: string,

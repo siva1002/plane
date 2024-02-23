@@ -8,11 +8,13 @@ import useSWR from 'swr'
 import { DayRecord } from "./viewrecor";
 type Props = {
     issueObj: TIssue
+    user:string |undefined
+    week:number
 }
 
 export const WeeklyCalendar: FC<Props> = observer((props) => {
-    const { issueObj } = props
-    var currentDate = moment();
+    const { issueObj,user,week } = props
+    var currentDate = week < 0 ? moment() :moment().subtract(week,'w');
     var weekStart = currentDate.clone().startOf('week');
     var weekEnd = currentDate.clone().endOf('week');
     const enddate = weekEnd.format()
@@ -25,7 +27,7 @@ export const WeeklyCalendar: FC<Props> = observer((props) => {
         workspaceSlug && issueObj.id ? `USER_TIMESHEET_${workspaceSlug}_${issueObj.id}` : null,
         async () => {
             if (issueObj.id) {
-                return await timeSheet.getTimesheet(issueObj.id, workspaceSlug, issueObj.project_id, `${startdate},${enddate}`)
+                return await timeSheet.getTimesheet(issueObj.id, workspaceSlug, issueObj.project_id, `${startdate},${enddate}`,user)
             }
         })
     for (var i = 0; i <= 6; i++) {
@@ -35,7 +37,6 @@ export const WeeklyCalendar: FC<Props> = observer((props) => {
     
     return <>
         {!isLoading && filteredata.map(d => 
-
             <td className="h-full cursor-pointer truncate text-left text-[0.825rem] text-custom-text-100" aria-disabled={true}>
                 <span>
                     <div className="bg-custom-background-90 w-[10rem] flex-row justify-center">

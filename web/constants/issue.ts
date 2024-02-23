@@ -388,6 +388,19 @@ export const ISSUE_DISPLAY_FILTERS_BY_LAYOUT: {
         values: ["sub_issue"],
       },
     },
+    timesheet:{
+      filters: ["priority", "state", "assignees","start_date", "target_date"],
+      display_properties: true,
+      display_filters: {
+        group_by: ["state", "priority", "labels", "assignees", "created_by", null],
+        order_by: ["sort_order", "-created_at", "-updated_at", "start_date", "priority"],
+        type: [null, "active", "backlog"],
+      },
+      extra_options: {
+        access: true,
+        values: ["show_empty_groups", "sub_issue"],
+      },
+    }
   },
 };
 

@@ -103,7 +103,7 @@ class BaseViewSet(TimezoneMixin, ModelViewSet, BasePaginator):
             response = super().handle_exception(exc)
             return response
         except Exception as e:
-            print(e) if settings.DEBUG else print("Server Error")
+            print(e) if settings.DEBUG or True else print("Server Error")
             if isinstance(e, IntegrityError):
                 return Response(
                     {"error": "The payload is not valid"},
@@ -130,6 +130,19 @@ class BaseViewSet(TimezoneMixin, ModelViewSet, BasePaginator):
                 )
 
             capture_exception(e)
+            
+            print(e)
+            print()
+            print()
+            print()
+            print()
+            print()
+            print()
+            print()
+            print()
+            print()
+
+
             return Response(
                 {"error": "Something went wrong please try again later"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -149,6 +162,7 @@ class BaseViewSet(TimezoneMixin, ModelViewSet, BasePaginator):
             return response
         except Exception as exc:
             response = self.handle_exception(exc)
+            print(exc)
             return exc
 
     @property

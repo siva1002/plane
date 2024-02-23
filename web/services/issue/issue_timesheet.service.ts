@@ -24,8 +24,9 @@ export class timeSheetservice extends APIService {
         issueId: string,
         workspaceSlug: string,
         projectId: string,
-        created_at:string): Promise<any> {
-        return this.get(`/api/workspaces/${workspaceSlug}/timesheet/${projectId}/issue/${issueId}`,{params: {created_at: created_at}})
+        created_at:string | undefined,
+        assignee:string): Promise<any> {
+        return this.get(`/api/workspaces/${workspaceSlug}/timesheet/${projectId}/issue/${issueId}`,{params: {created_at: created_at, assignee:assignee}})
             .then((response) => response?.data)
             .catch((error) => {
                 console.log(error)

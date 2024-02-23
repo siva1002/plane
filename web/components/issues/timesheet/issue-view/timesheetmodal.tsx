@@ -1,12 +1,12 @@
 import { useEffect, useState, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "next/router";
 import { LayoutPanelTop } from "lucide-react";
 import { ParentIssuesListModal } from "components/issues/parent-issues-list-modal";
 
 // ui
-import { Button, Input, CustomMenu,TextArea } from "@plane/ui";
+import { Button, Input, CustomMenu, TextArea } from "@plane/ui";
 import { DateDropdown } from "components/dropdowns";
 // hooks
 import useToast from "hooks/use-toast";
@@ -21,54 +21,51 @@ import { TimeSelectProject } from "../select/select-project";
 import { renderFormattedPayloadDate } from "helpers/date-time.helper";
 import moment from "moment";
 
-
-
-
 type Props = {
   isOpen: boolean;
-  pickedDay:Date;
+  pickedDay: Date;
   handleClose: () => void;
   onSubmit?: () => Promise<void>;
 };
 type TTimesheetFormValues = {
   workedhours: number;
   description: string;
-  issue: string
-  project_id: string
-  created_at: string 
+  issue: string;
+  project_id: string;
+  created_at: string;
 };
 export const IssueTimeSheetModal: React.FC<Props> = (props) => {
-  const { isOpen, handleClose,pickedDay} = props;
-  const route = useRouter()
+  const { isOpen, handleClose, pickedDay } = props;
+  const route = useRouter();
   const [isCreateLoading, setIsCreateLoading] = useState(false);
-  const { workspaceSlug } = route.query as { workspaceSlug: string }
-  const service = new timeSheetservice()
-  const { currentWorkspace } = useWorkspace()
+  const { workspaceSlug } = route.query as { workspaceSlug: string };
+  const service = new timeSheetservice();
+  const { currentWorkspace } = useWorkspace();
   const { workspaceProjectIds: workspaceProjectIds } = useProject();
 
   const {
     control,
-    formState: { errors, isSubmitting, isValid },
+    formState: { errors, isSubmitting },
     handleSubmit,
     setFocus,
-    watch
+    watch,
   } = useForm<TTimesheetFormValues>({
     defaultValues: {
       workedhours: 0,
       description: "",
       issue: "",
       project_id: "",
-      created_at:moment(pickedDay).format("YYYY-MM-DD")
+      created_at: moment(pickedDay).format("YYYY-MM-DD"),
     },
     mode: "onChange",
     reValidateMode: "onChange",
   });
 
   const { setToastAlert } = useToast();
-  const [IssueListModalOpen, ListModalOpen] = useState(false)
+  const [IssueListModalOpen, ListModalOpen] = useState(false);
   // hooks
   const [selectedParentIssue, setSelectedParentIssue] = useState<ISearchIssueResponse | null>(null);
-  const projectId = watch("project_id")
+  const projectId = watch("project_id");
   useEffect(() => {
     setIsCreateLoading(false);
   }, [isOpen]);
@@ -86,20 +83,18 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
       workspace: currentWorkspace?.id,
       project: recorddata.project_id,
       issue: recorddata.issue,
-      created_at: recorddata.created_at
-    }
-    const response = await service.createTimerecord(workspaceSlug, recorddata.project_id, recorddata.issue, payload)
+      created_at: recorddata.created_at,
+    };
+    const response = await service.createTimerecord(workspaceSlug, recorddata.project_id, recorddata.issue, payload);
     onClose();
   };
   const onChange = (formData: Partial<TIssue>) => {
-
-    console.log(formData)
-  }
+    console.log(formData);
+  };
   const handleFormChange = () => {
     if (!onChange) return;
-    if ((watch("issue") || watch("project_id"))) onChange(watch());
-  }
-  console.log(moment(pickedDay).format("MMMM Do,dddd"))
+    if (watch("issue") || watch("project_id")) onChange(watch());
+  };
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-20" onClose={onClose}>
@@ -130,32 +125,35 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
                 <div className="flex flex-col gap-6 p-6">
                   <div className="flex w-full items-center justify-start gap-6">
                     <span className="flex items-center justify-start">
-                      <h3 className="text-xl font-medium 2xl:text-2xl"><span className="break-words font-medium text-custom-text-100">
-                        {!isSubmitting ? "Timesheet" : "Submiting"}
-                      </span></h3>
+                      <h3 className="text-xl font-medium 2xl:text-2xl">
+                        <span className="break-words font-medium text-custom-text-100">
+                          {!isSubmitting ? "Timesheet" : "Submiting"}
+                        </span>
+                      </h3>
                     </span>
+                    <Controller
+                        control={control}
+                        name="created_at"
+                        render={({ field: { value, onChange } }) => (
+                          <div className="h-7">
+                            <DateDropdown
+                              value={value}
+                              onChange={(date) => {
+                                onChange(date ? renderFormattedPayloadDate(pickedDay) : null);
+                                handleFormChange();
+                              }}
+                              buttonVariant="border-with-text"
+                              // maxDate={moment(pickedDay).format('DD-MM-YYY') ?? undefined}
+                              tabIndex={10}
+                              disabled={true}
+                            />
+                          </div>
+                        )}
+                      />
                   </div>
                   <form onSubmit={handleSubmit(handleFormSubmit)} className="flex-row">
                     <div className="mb-5">
-                    <Controller
-                  control={control}
-                  name="created_at"
-                  render={({ field: { value, onChange } }) => (
-                    <div className="h-7">
-                      <DateDropdown
-                        value={value}
-                        onChange={(date) => {
-                          onChange(date ? renderFormattedPayloadDate(pickedDay) : null);
-                          handleFormChange();
-                        }}
-                        buttonVariant="border-with-text"
-                        // maxDate={moment(pickedDay).format('DD-MM-YYY') ?? undefined}
-                        tabIndex={10}
-                        disabled={true}
-                      />
-                    </div>
-                  )}
-                />
+                      
                       <Controller
                         control={control}
                         name="workedhours"
@@ -188,17 +186,19 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
                     </div>
                     <div className="flex my-5 gap-5">
                       <div>
-                        {<Controller
-                          name="project_id"
-                          control={control}
-                          render={({ field: { value, onChange } }) => (
-                            <TimeSelectProject
-                              value={value ?? undefined}
-                              onChange={onChange}
-                              projects={workspaceProjectIds ?? undefined}
-                            />
-                          )}
-                        />}
+                        {
+                          <Controller
+                            name="project_id"
+                            control={control}
+                            render={({ field: { value, onChange } }) => (
+                              <TimeSelectProject
+                                value={value ?? undefined}
+                                onChange={onChange}
+                                projects={workspaceProjectIds ?? undefined}
+                              />
+                            )}
+                          />
+                        }
                       </div>
                       <CustomMenu
                         customButton={
@@ -226,11 +226,9 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
                         placement="bottom-start"
                         tabIndex={15}
                       >
-
                         <CustomMenu.MenuItem className="!p-1" onClick={() => ListModalOpen(true)}>
                           Select Issue
                         </CustomMenu.MenuItem>
-
                       </CustomMenu>
                       <Controller
                         control={control}
@@ -250,9 +248,8 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
                       />
                     </div>
 
-
                     <div className="flex justify-end gap-2">
-                      <Button variant="neutral-primary" size="sm" type="submit" >
+                      <Button variant="neutral-primary" size="sm" type="submit">
                         Submit
                       </Button>
                     </div>

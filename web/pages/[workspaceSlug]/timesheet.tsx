@@ -42,8 +42,8 @@ const TimesheetPage: NextPageWithLayout = observer(() => {
   return (
     <>
       {workspaceProjectIds && workspaceProjectIds.length > 0 ? (
-        <div className="flex h-full flex-col overflow-hidden bg-custom-background-100">
-         <Timesheet/>
+        <div className="flex h-full flex-col overflow-hidden bg-custom-background-100 ">
+         <Timesheet addtimesheet={true} user={currentUser?.id}/>
         </div>
       ) : (
         <EmptyState

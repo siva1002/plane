@@ -18,7 +18,7 @@ const ProjectTimesheetPage: NextPageWithLayout = () => (
 ProjectTimesheetPage.getLayout = function getLayout(page: ReactElement) {
   return (
     <AppLayout header={<WorkspaceTimesheetHeader />} withProjectWrapper>
-      {page}
+      {page }
     </AppLayout>
   );
 };
