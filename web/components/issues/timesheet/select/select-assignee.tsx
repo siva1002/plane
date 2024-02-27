@@ -3,7 +3,7 @@ import { IUserLite } from "@plane/types";
 type Props={
   value: string | null;
   onChange: (val: string) => void;
-  assginees:IUserLite[] | undefined;
+  assginees:IUserLite[] | [];
 }
 
 export const SelectAssignee: React.FC<Props> = (props) => {

@@ -7,14 +7,13 @@ import { CalendarViewtimesheet } from "./calendar/monthly";
 
 type Props = {
   addtimesheet: boolean
-  user: string
+  user: string | undefined
   week: number
   layout: string
 }
 
 export const Timesheet = observer((props: Props) => {
   const { addtimesheet, user, week, layout } = props
-  console.log(layout, "timesheet props")
   const [type, Switchtype] = useState('all-issues')
   const handleType = (key: string) => {
     Switchtype(key)
@@ -41,6 +40,6 @@ export const Timesheet = observer((props: Props) => {
         </div>
         <AllIssues type={type} user={getUserDetails(user)} addtimesheet={addtimesheet} week={week} />
       </div>
-      :<CalendarViewtimesheet week={week} user={getUserDetails(user)} />}
+      : <CalendarViewtimesheet week={week} user={getUserDetails(user)} />}
   </>
 })

@@ -9,6 +9,7 @@ type Props = {
 
 export const DayRecord: FC<Props> = observer((props) => {
     const { data } = props
+    console.log(data)
     const [timeRecord, setTimerecord] = useState([])
     const [isOpen, setIsOpen] = useState(false)
     const Showmodal = (data: any) => {
@@ -23,7 +24,6 @@ export const DayRecord: FC<Props> = observer((props) => {
 
     return <>{
         <div>
-
             {data.length <2 ? data.map(record =>
                 <Tooltip tooltipHeading="Description" tooltipContent={record.description}>
                     <div className="h-full w-full cursor-pointer truncate px-4 py-2.5 text-left text-[0.825rem] text-custom-text-100">
@@ -32,11 +32,10 @@ export const DayRecord: FC<Props> = observer((props) => {
                 </Tooltip>
 
 
-            ) : data.length >= 2 ? <div onClick={() => Showmodal(data)} >{data.length}</div>
+            ) : data.length >= 2 ? <div className="h-full w-full cursor-pointer truncate px-4 py-2.5 text-left text-[0.825rem] text-custom-text-100" onClick={() => Showmodal(data)} >{data.length}</div>
                 : <p></p>
             }
             <div>
-
             </div>
             <Transition.Root show={isOpen} as={Fragment}>
                 <Dialog as="div" className="relative z-20" onClose={onClose}>

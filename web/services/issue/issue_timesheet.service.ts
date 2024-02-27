@@ -24,29 +24,29 @@ export class timeSheetservice extends APIService {
         issueId: string,
         workspaceSlug: string,
         projectId: string,
-        created_at:string | undefined,
-        assignee:string): Promise<any> {
-        return this.get(`/api/workspaces/${workspaceSlug}/timesheet/${projectId}/issue/${issueId}`,{params: {created_at: created_at, assignee:assignee}})
+        created_at: string | undefined,
+        assignee: string): Promise<any> {
+        return this.get(`/api/workspaces/${workspaceSlug}/timesheet/${projectId}/issue/${issueId}`, { params: { created_at: created_at, assignee: assignee } })
             .then((response) => response?.data)
             .catch((error) => {
                 console.log(error)
                 throw error?.response?.data;
             });
     }
-    async filterTimesheet(
-        issueId: string,
+    async getProjectTimesheet(
         workspaceSlug: string,
         projectId: string,
-        ): Promise<any> {
-        return this.get(`/api/workspaces/${workspaceSlug}/timesheet/${projectId}/issue/${issueId}`)
+        created_at: string | undefined,
+        user: string|undefined
+    ): Promise<any> {
+        return this.get(`/api/workspaces/${workspaceSlug}/projects/${projectId}/timesheet`, { params: { created_at: created_at, assignee: user } })
             .then((response) => response?.data)
             .catch((error) => {
                 console.log(error)
-                throw error?.response?.data;
+                throw error?.response;
             });
     }
-
-
-
-
 }
+
+
+

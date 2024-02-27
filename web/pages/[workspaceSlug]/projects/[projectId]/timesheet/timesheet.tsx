@@ -1,6 +1,6 @@
 import { observer } from "mobx-react"
 import { Timesheet } from "components/issues/timesheet/timesheet"
-import { useRouter } from "next/router";
+import moment from "moment";
 
 
 import { Controller, useForm } from "react-hook-form";
@@ -14,6 +14,7 @@ import { useState } from "react";
 export const ProjectTimeSheet = observer(() => {
     const [weekCount, setCount] = useState(0)
     const [layouttype,selectedLayout]=useState('week')
+    var currentDate = moment().subtract(weekCount, 'months');
 
     const {
         control,
@@ -45,6 +46,7 @@ export const ProjectTimeSheet = observer(() => {
     const issueCalendarView = useCalendarView();
     const handleLayoutChange=(key:string)=>{
         selectedLayout(key)
+        setCount(0)
         issueCalendarView.updateCalendarPayload(
             layouttype === "month"
               ? issueCalendarView.calendarFilters.activeMonthDate
@@ -53,6 +55,9 @@ export const ProjectTimeSheet = observer(() => {
     }
     return <>
         <div className=" flex border-b border-custom-border-200 bg-custom-sidebar-background-100 p-4 justify-end gap-6">
+            <div>
+                <h1> {layouttype==='month' ? currentDate.format('MMMM') :'' }</h1>
+            </div>
             <div className="flex">
                 <button type="button" className="grid place-items-center" onClick={incrementCount}><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevron-left "><path d="m15 18-6-6 6-6"></path></svg></button>
                 <button type="button" className="grid place-items-center" onClick={decrementCount}><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-chevron-right "><path d="m9 18 6-6-6-6"></path></svg></button>

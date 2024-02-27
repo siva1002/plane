@@ -86,14 +86,19 @@ class ProjectTimesheet(BaseAPIView):
 
     def get_queryset(self):
         project_id=self.kwargs.get('project_id')
-        project_timesheet=super().get_queryset().select_related('actor','issue')
-        return project_timesheet.filter(project=project_id)
+        project_timesheet=TimeSheet.objects.filter(project=project_id)
+        return project_timesheet
     
     def get(self, request, *args, **kwargs):
         ''' Get timesheet according to project'''
         timesheet_query_set=self.get_queryset()
+        issuefilter=timesheet_filter(
+                    self.request.query_params, 
+                    "GET")
+        if (issuefilter):
+            issue_timesheet_queryset=timesheet_query_set.filter(**issuefilter).order_by("created_at")
         issue_timesheet=TimeSheetSerializer(
-                                timesheet_query_set,
+                                issue_timesheet_queryset,
                                 many=True)
         return Response(data=issue_timesheet.data,status=status.HTTP_200_OK)
 

@@ -22,6 +22,14 @@ class IssueService extends APIService{
               throw error?.response;
             });
       }
+      async getProjectTimesheet(workspace_slug:string,project_id:string): Promise<any>{
+        return this.get(`api/workspaces/${workspace_slug}/projects/${project_id}/timesheet/`, {
+          })
+            .then((response) => response?.data)
+            .catch((error) => {
+              throw error?.response;
+            });
+      }
       
     }
 
