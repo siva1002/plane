@@ -59,7 +59,7 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
       issue: edit ? edit.issue : '',
       project_id: edit ? edit.project : '',
       id: edit ? edit.id:'',
-      created_at: moment(pickedDay).format("YYYY-MM-DD"),
+      created_at:edit ?edit.created_at :moment(pickedDay).format("YYYY-MM-DD"),
     },
     mode: "onChange",
     reValidateMode: "onChange",
