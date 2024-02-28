@@ -76,6 +76,7 @@ class ProjectMemberPermission(BasePermission):
 
 class ProjectEntityPermission(BasePermission):
     def has_permission(self, request, view):
+        print(request.user.is_anonymous)
         if request.user.is_anonymous:
             return False
 

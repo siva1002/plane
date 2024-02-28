@@ -41,7 +41,7 @@ export const WeeklyCalendar: FC<Props> = observer((props) => {
             <td className="h-full cursor-pointer truncate text-left text-[0.825rem] text-custom-text-100" aria-disabled={true}>
                 <span>
                     <div className="bg-custom-background-90 w-[10rem] flex-row justify-center">
-                        <DayRecord data={d} />
+                        <DayRecord data={d} workedhours={workedhours} />
                     </div>
                 </span>
             </td>

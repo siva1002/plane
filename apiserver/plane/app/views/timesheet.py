@@ -76,6 +76,16 @@ class TimeSheetCreateView(BaseAPIView):
             timesheet.save()
             return Response(data={"data":timesheet.data,"message":"Record Created"},status=status.HTTP_201_CREATED)
         return Response(data={"data":timesheet.errors},status=status.HTTP_206_PARTIAL_CONTENT)
+    
+    def patch(self,request,*args,**kwargs):
+        instance=TimeSheet.objects.get(id=kwargs.get('pk'))
+        timesheet=TimeSheetSerializer(instance=instance,
+                                      data=request.data,
+                                      context={"user":self.request.user})
+        if timesheet.is_valid():
+            timesheet.save()
+            return Response(data={"data":timesheet.data,"message":"Record Update"},status=status.HTTP_201_CREATED)
+        return Response(data={"data":timesheet.errors},status=status.HTTP_206_PARTIAL_CONTENT)
         
 
 class ProjectTimesheet(BaseAPIView):

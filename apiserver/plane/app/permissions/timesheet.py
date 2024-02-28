@@ -27,7 +27,7 @@ class TimesheetLitePermission(BasePermission):
             ).exists()
 
             return issue_permission
-        if request.method in ["POST"]:
+        if request.method in ["POST",'PATCH','PUT','UPDATE']:
             per=WorkspaceMember.objects.filter(
                 workspace__slug=view.workspace_slug,
                 member=request.user,

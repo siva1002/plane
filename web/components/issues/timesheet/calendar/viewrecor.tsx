@@ -3,15 +3,22 @@ import { observer } from "mobx-react"
 import { TIssueTimesheetRecord } from "@plane/types"
 import { Tooltip } from "@plane/ui";
 import { Dialog, Transition } from "@headlessui/react";
+import { IssueTimeSheetModal } from "../issue-view/timesheetmodal";
 type Props = {
     data: [TIssueTimesheetRecord]
+    workedhours: number
 }
 
 export const DayRecord: FC<Props> = observer((props) => {
-    const { data } = props
-    console.log(data)
+    const { data, workedhours } = props
     const [timeRecord, setTimerecord] = useState([])
     const [isOpen, setIsOpen] = useState(false)
+    const [EditModal,setEditModal]=useState(false) 
+    const [EditRecord, SetEditRecord] = useState([])
+    const handleClick = (editdata:any) => {
+            setEditModal(true);
+            SetEditRecord(editdata)
+    };
     const Showmodal = (data: any) => {
         setTimerecord(data)
         setIsOpen(true)
@@ -21,22 +28,17 @@ export const DayRecord: FC<Props> = observer((props) => {
         setIsOpen(false)
         setTimerecord([])
     }
+    const handleClose=()=>{
+        setEditModal(false)
+        SetEditRecord([])
 
+    }
+    const dailyworkedhours = data?.reduce((acc: number, d) => {
+        return d['workedhour'] + acc
+    }, 0)
     return <>{
         <div>
-            {data.length <2 ? data.map(record =>
-                <Tooltip tooltipHeading="Description" tooltipContent={record.description}>
-                    <div className="h-full w-full cursor-pointer truncate px-4 py-2.5 text-left text-[0.825rem] text-custom-text-100">
-                        {record.workedhour}
-                    </div>
-                </Tooltip>
-
-
-            ) : data.length >= 2 ? <div className="h-full w-full cursor-pointer truncate px-4 py-2.5 text-left text-[0.825rem] text-custom-text-100" onClick={() => Showmodal(data)} >{data.length}</div>
-                : <p></p>
-            }
-            <div>
-            </div>
+            {dailyworkedhours > 0 && <div className="h-full w-full cursor-pointer truncate px-4 py-2.5 text-left text-[0.825rem] text-custom-text-100" onClick={() => Showmodal(data)} >{dailyworkedhours}</div>}
             <Transition.Root show={isOpen} as={Fragment}>
                 <Dialog as="div" className="relative z-20" onClose={onClose}>
                     <Transition.Child
@@ -71,7 +73,7 @@ export const DayRecord: FC<Props> = observer((props) => {
                                                     <div className="flex-row gap-20">
                                                         {timeRecord.map(record =>
 
-                                                            <div className="bg-custom-background-90 flex-row justify-center mb-3 w-[30rem] p-2 text-m ">{record.workedhour}-{record.description}</div>
+                                                            <div className="bg-custom-background-90 flex-row justify-center mb-3 w-[30rem] p-2 text-m ">{record.workedhour}-{record.description}    <p onClick={() => handleClick(record)}>Edit</p></div>
                                                         )}
                                                     </div>
 
@@ -85,6 +87,7 @@ export const DayRecord: FC<Props> = observer((props) => {
                     </div>
                 </Dialog>
             </Transition.Root>
+            {EditModal && <IssueTimeSheetModal isOpen={EditModal} edit={EditRecord} handleClose={handleClose} />}
         </div>
 
 

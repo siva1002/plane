@@ -102,7 +102,7 @@ export const AllIssues = observer((props: IProfileIssuesPage) => {
                         </tr>
                     )}
                 </table>
-                {showModal && <IssueTimeSheetModal handleClose={() => handleClose()} isOpen={showModal} key={""} pickedDay={pickedDate} />}
+                {showModal && <IssueTimeSheetModal handleClose={() => handleClose()} isOpen={showModal} key={""} pickedDay={pickedDate}  />}
 
             </div>
 

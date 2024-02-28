@@ -46,6 +46,20 @@ export class timeSheetservice extends APIService {
                 throw error?.response;
             });
     }
+    async updateTimerecord(
+        workspaceSlug: string,
+        projectId: string,
+        issueId: string,
+        id:string,
+        data: any
+    ): Promise<any> {
+        return this.patch(`/api/workspaces/${workspaceSlug}/timesheet/${projectId}/issue/${issueId}/${id}/`, data)
+            .then((response) => response?.data)
+            .catch((error) => {
+                console.log(error)
+                throw error?.response?.data;
+            });
+    }
 }
 
 

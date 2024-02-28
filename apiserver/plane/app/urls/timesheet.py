@@ -10,5 +10,9 @@ urlpatterns=[
     path('workspaces/<str:slug>/timesheet/<uuid:project_id>/issue/<uuid:pk>/create',
          TimeSheetCreateView.as_view()),
     
-    path('workspaces/<str:slug>/projects/<uuid:project_id>/timesheet',ProjectTimesheet.as_view())
+    path('workspaces/<str:slug>/projects/<uuid:project_id>/timesheet',
+         ProjectTimesheet.as_view()),
+    
+    path('workspaces/<str:slug>/timesheet/<uuid:project_id>/issue/<uuid:issue>/<uuid:pk>/',
+         TimeSheetCreateView.as_view())
     ]

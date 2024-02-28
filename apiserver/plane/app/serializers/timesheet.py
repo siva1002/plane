@@ -12,7 +12,10 @@ class TimeSheetSerializer(serializers.ModelSerializer):
         timesheet.created_at=validated_data.get('created_at')
         timesheet.save()
         return timesheet
+    
+    def update(self, instance, validated_data):
+        return super().update(instance, validated_data)
     class Meta:
         model=TimeSheet
-        fields=['workedhour','description','actor','issue','created_at','project']
+        fields=['workedhour','description','actor','issue','created_at','project','id']
     

@@ -24,6 +24,7 @@ import moment from "moment";
 type Props = {
   isOpen: boolean;
   pickedDay: Date;
+  edit: any
   handleClose: () => void;
   onSubmit?: () => Promise<void>;
 };
@@ -33,9 +34,11 @@ type TTimesheetFormValues = {
   issue: string;
   project_id: string;
   created_at: string;
+  id:string
 };
 export const IssueTimeSheetModal: React.FC<Props> = (props) => {
-  const { isOpen, handleClose, pickedDay } = props;
+  const { isOpen, handleClose, pickedDay, edit } = props;
+  console.log(edit)
   const route = useRouter();
   const [isCreateLoading, setIsCreateLoading] = useState(false);
   const { workspaceSlug } = route.query as { workspaceSlug: string };
@@ -51,10 +54,11 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
     watch,
   } = useForm<TTimesheetFormValues>({
     defaultValues: {
-      workedhours: 0,
-      description: "",
-      issue: "",
-      project_id: "",
+      workedhours: edit ? edit.workedhour : 0,
+      description: edit ? edit.description : '',
+      issue: edit ? edit.issue : '',
+      project_id: edit ? edit.project : '',
+      id: edit ? edit.id:'',
       created_at: moment(pickedDay).format("YYYY-MM-DD"),
     },
     mode: "onChange",
@@ -77,6 +81,7 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
     handleClose();
   };
   const handleFormSubmit = async (recorddata: TTimesheetFormValues) => {
+    console.log(recorddata)
     const payload = {
       workedhour: recorddata.workedhours,
       description: recorddata.description,
@@ -85,8 +90,15 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
       issue: recorddata.issue,
       created_at: recorddata.created_at,
     };
-    const response = await service.createTimerecord(workspaceSlug, recorddata.project_id, recorddata.issue, payload);
-    onClose();
+    console.log(recorddata)
+    if (!edit){
+      const response = await service.createTimerecord(workspaceSlug, recorddata.project_id, recorddata.issue, payload);
+    }
+    else{
+      const response = await service.updateTimerecord(workspaceSlug, recorddata.project_id, recorddata.issue,recorddata.id, payload);
+    }
+    console.log(payload)
+    // onClose();
   };
   const onChange = (formData: Partial<TIssue>) => {
     console.log(formData);
@@ -127,33 +139,33 @@ export const IssueTimeSheetModal: React.FC<Props> = (props) => {
                     <span className="flex items-center justify-start">
                       <h3 className="text-xl font-medium 2xl:text-2xl">
                         <span className="break-words font-medium text-custom-text-100">
-                          {!isSubmitting ? "Timesheet" : "Submiting"}
+                          {!edit && !isSubmitting ? "Timesheet" : edit && !isSubmitting ? 'Update Timesheet' :"Submiting"}
                         </span>
                       </h3>
                     </span>
                     <Controller
-                        control={control}
-                        name="created_at"
-                        render={({ field: { value, onChange } }) => (
-                          <div className="h-7">
-                            <DateDropdown
-                              value={value}
-                              onChange={(date) => {
-                                onChange(date ? renderFormattedPayloadDate(pickedDay) : null);
-                                handleFormChange();
-                              }}
-                              buttonVariant="border-with-text"
-                              // maxDate={moment(pickedDay).format('DD-MM-YYY') ?? undefined}
-                              tabIndex={10}
-                              disabled={true}
-                            />
-                          </div>
-                        )}
-                      />
+                      control={control}
+                      name="created_at"
+                      render={({ field: { value, onChange } }) => (
+                        <div className="h-7">
+                          <DateDropdown
+                            value={value}
+                            onChange={(date) => {
+                              onChange(date ? renderFormattedPayloadDate(pickedDay) : null);
+                              handleFormChange();
+                            }}
+                            buttonVariant="border-with-text"
+                            // maxDate={moment(pickedDay).format('DD-MM-YYY') ?? undefined}
+                            tabIndex={10}
+                            disabled={true}
+                          />
+                        </div>
+                      )}
+                    />
                   </div>
                   <form onSubmit={handleSubmit(handleFormSubmit)} className="flex-row">
                     <div className="mb-5">
-                      
+
                       <Controller
                         control={control}
                         name="workedhours"
